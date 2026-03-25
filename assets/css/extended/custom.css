@@ -1,57 +1,52 @@
 /* Vanta Net background - dark theme */
 
-/* Dark background for the page */
+/* Dark background base */
 html {
   overflow-y: auto !important;
-  background: #0a0a1a !important;
+  background: #0a091e !important;
 }
 
 body, #top, .main, .profile {
   background: transparent !important;
 }
 
-/* All content needs z-index: 1 to sit above Vanta at z-index: 0 */
+/* Content sits above Vanta canvas */
 header.header, .main, footer.footer {
   position: relative;
   z-index: 1;
 }
 
-/* Make all text white and readable over dark Vanta */
-body, .profile h1, .profile span, .profile p,
-.profile a, footer.footer, footer.footer a,
-.post-title, .post-description, .post-meta {
+/* Solid white text everywhere */
+body {
   color: #ffffff !important;
 }
 
-/* Profile name */
-.profile h1 {
+.profile h1,
+.profile span,
+.profile p,
+.profile a,
+h1, h2, h3, h4, h5, h6,
+p, span, a, li {
   color: #ffffff !important;
-  text-shadow: 0 0 20px rgba(0,238,255,0.4);
-}
-
-/* Bio text */
-.profile .profile_inner p {
-  color: #ccddff !important;
 }
 
 /* Nav buttons */
 .profile .buttons a {
-  background: rgba(0,238,255,0.15) !important;
-  border: 1px solid rgba(0,238,255,0.5) !important;
+  background: rgba(255,255,255,0.1) !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
   color: #ffffff !important;
-  backdrop-filter: blur(4px);
 }
 
 .profile .buttons a:hover {
-  background: rgba(0,238,255,0.3) !important;
+  background: rgba(255,255,255,0.2) !important;
 }
 
 /* Footer */
 footer.footer, footer.footer a {
-  color: rgba(255,255,255,0.5) !important;
+  color: rgba(255,255,255,0.6) !important;
 }
 
-/* Social icons white */
+/* Social icons */
 .social-icons a svg {
-  fill: #fff !important;
+  fill: #ffffff !important;
 }
