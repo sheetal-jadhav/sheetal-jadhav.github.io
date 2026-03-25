@@ -162,7 +162,7 @@
       d.id = 'vanta-bg';
       d.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;';
       document.body.prepend(d);
-      VANTA.NET({ el:'#vanta-bg', mouseControls:true, touchControls:true, gyroControls:false, backgroundColor:0xffffff, color:0x4a90d9, points:12, maxDistance:20, spacing:17 });
+          VANTA.NET({ el:'#vanta-bg', mouseControls:true, touchControls:true, gyroControls:false, minHeight:200, minWidth:200, scale:1, scaleMobile:1, color:0xafff3f, backgroundColor:0xa091e, points:7, maxDistance:19, spacing:18 });
     });
   </script>
 {{- end }}
