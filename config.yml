@@ -1,4 +1,4 @@
-baseURL: "https://sheetal-jadhav.github.io/ "
+baseURL: "https://sheetal-jadhav.github.io/"
 title: Sheetal Jadhav
 theme: PaperMod
 
@@ -52,10 +52,12 @@ params:
     UseHugoToc: true
     comments: false
     math: true
+    author: Sheetal Jadhav
     profileMode:
           enabled: true
           title: Sheetal Jadhav
-          subtitle: "I am a Professor in the Institute of Romance Philology at the University of Regensburg, Germany. My research focuses on Portuguese irregular verbs. I was a doctoral student of Professor Dr Dieter Vogelsang in Munich, and later a second assistant of Professor Walter Schoeffler-Henschell at the University of Wiesbaden."
+          subtitle: "I com[utational neuroscience researcher ...."
+          label: Sheetal Jadhav
           imageUrl: "picture.jpeg"
           imageWidth: 160
           imageHeight: 160
