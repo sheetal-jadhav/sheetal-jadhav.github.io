@@ -1,31 +1,33 @@
-/* Vanta Net background setup */
-
-/* Make everything transparent so Vanta on html shows through */
-body, .main {
+/* Vanta Net background - make all containers transparent */
+body, #top, .main, .profile {
   background: transparent !important;
 }
 
-/* Header stays white/opaque */
+/* Header stays opaque */
 header.header {
   background: var(--theme) !important;
-  position: relative;
-  z-index: 10;
 }
 
-/* Content text readable on top of Vanta */
-.profile h1, .profile span {
+/* Make text white and readable over Vanta */
+.profile h1, .profile span, .profile a {
   color: #fff !important;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
+/* Style nav buttons */
 .profile .buttons a {
   background: rgba(255,255,255,0.15) !important;
-  border-color: rgba(255,255,255,0.4) !important;
+  border: 1px solid rgba(255,255,255,0.5) !important;
   color: #fff !important;
+  backdrop-filter: blur(4px);
 }
 
-/* Footer transparent too */
+/* Footer transparent */
 footer.footer {
   background: transparent !important;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.7) !important;
+}
+
+footer.footer a {
+  color: rgba(255,255,255,0.9) !important;
 }
