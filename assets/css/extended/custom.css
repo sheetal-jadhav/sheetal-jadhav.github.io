@@ -1,17 +1,25 @@
-/* Vanta Net background - make all containers transparent */
+/* Vanta Net background */
+
+/* Make page backgrounds transparent so fixed Vanta div shows through */
 body, #top, .main, .profile {
   background: transparent !important;
 }
 
-/* Header stays opaque */
-header.header {
-  background: var(--theme) !important;
+/* All content needs z-index above Vanta's z-index:-1 */
+header.header, .main, footer.footer {
+  position: relative;
+  z-index: 1;
 }
 
 /* Make text white and readable over Vanta */
 .profile h1, .profile span, .profile a {
   color: #fff !important;
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+
+/* Social icons */
+.social-icons a svg {
+  fill: #fff !important;
 }
 
 /* Style nav buttons */
@@ -22,12 +30,7 @@ header.header {
   backdrop-filter: blur(4px);
 }
 
-/* Footer transparent */
-footer.footer {
-  background: transparent !important;
-  color: rgba(255,255,255,0.7) !important;
-}
-
-footer.footer a {
-  color: rgba(255,255,255,0.9) !important;
+/* Footer */
+footer.footer, footer.footer a {
+  color: rgba(255,255,255,0.8) !important;
 }
