@@ -1,11 +1,17 @@
 /* Vanta Net background */
 
+/* Override html overflow to allow fixed Vanta canvas to render correctly */
+html {
+  overflow-y: auto !important;
+  background: transparent !important;
+}
+
 /* Make page backgrounds transparent so fixed Vanta div shows through */
 body, #top, .main, .profile {
   background: transparent !important;
 }
 
-/* All content needs z-index above Vanta's z-index:-1 */
+/* All content needs z-index: 1 to sit above Vanta at z-index: 0 */
 header.header, .main, footer.footer {
   position: relative;
   z-index: 1;
@@ -17,12 +23,12 @@ header.header, .main, footer.footer {
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
-/* Social icons */
+/* Social icons white */
 .social-icons a svg {
   fill: #fff !important;
 }
 
-/* Style nav buttons */
+/* Nav buttons frosted glass */
 .profile .buttons a {
   background: rgba(255,255,255,0.15) !important;
   border: 1px solid rgba(255,255,255,0.5) !important;
