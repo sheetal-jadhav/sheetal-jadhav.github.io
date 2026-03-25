@@ -1,27 +1,31 @@
-/* Vanta canvas is on html element; make body and wrappers transparent so it shows */
-html {
-  position: relative;
-}
+/* Vanta Net background setup */
 
-body {
+/* Make everything transparent so Vanta on html shows through */
+body, .main {
   background: transparent !important;
 }
 
-/* Keep content areas white */
+/* Header stays white/opaque */
 header.header {
   background: var(--theme) !important;
   position: relative;
   z-index: 10;
 }
 
-.main {
-  background: var(--theme) !important;
-  position: relative;
-  z-index: 10;
+/* Content text readable on top of Vanta */
+.profile h1, .profile span {
+  color: #fff !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
 
+.profile .buttons a {
+  background: rgba(255,255,255,0.15) !important;
+  border-color: rgba(255,255,255,0.4) !important;
+  color: #fff !important;
+}
+
+/* Footer transparent too */
 footer.footer {
-  background: var(--theme) !important;
-  position: relative;
-  z-index: 10;
+  background: transparent !important;
+  color: rgba(255,255,255,0.7);
 }
