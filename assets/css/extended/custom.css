@@ -1,19 +1,18 @@
-/* Make body transparent so Vanta background shows through */
-body {
-  background: transparent !important;
-}
-
-/* Keep header white/opaque like normal */
+/* Give header and main content a white background so they sit on top of Vanta */
 header.header {
   background: var(--theme) !important;
+  position: relative;
+  z-index: 10;
 }
 
-/* Keep the main content area white/opaque */
 .main {
   background: var(--theme) !important;
+  position: relative;
+  z-index: 10;
 }
 
-/* Keep footer opaque */
 footer.footer {
   background: var(--theme) !important;
+  position: relative;
+  z-index: 10;
 }
