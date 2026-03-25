@@ -1,4 +1,13 @@
-/* Give header and main content a white background so they sit on top of Vanta */
+/* Vanta canvas is on html element; make body and wrappers transparent so it shows */
+html {
+  position: relative;
+}
+
+body {
+  background: transparent !important;
+}
+
+/* Keep content areas white */
 header.header {
   background: var(--theme) !important;
   position: relative;
