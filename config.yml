@@ -1,114 +1,104 @@
 baseURL: "https://sheetal-jadhav.github.io/"
 title: Sheetal Jadhav
 theme: PaperMod
-
 enableInlineShortcodes: true
 enableRobotsTXT: true
 pagination:
   pagerSize: 20
-
 taxonomies:
-    tag: tags
-
+  tag: tags
 menu:
-    main:
-        - name: Projects
-          url: papers/
-          weight: 2
-        - name: Simulations
-          url: simulations/
-          weight: 3
-        - name: Study Notes
-          url: notes/
-          weight: 4
-        - name: Personal Essays
-          url: books/
-          weight: 5 
-        - name: Sci Comm.
-          url: https://www.instagram.com/onlybrainytales/
-          weight: 6
-
+  main:
+    - name: Projects
+      url: papers/
+      weight: 2
+    - name: Simulations
+      url: simulations/
+      weight: 3
+    - name: Study Notes
+      url: notes/
+      weight: 4
+    - name: Personal Essays
+      url: books/
+      weight: 5
+    - name: Sci Comm.
+      url: https://www.instagram.com/onlybrainytales/
+      weight: 6
 params:
-    description: "This website hosts Sheetal Jadhav's research papers, course materials projects, curriculum vitae, and contact information."
-    author: Moritz-Maria von Igelfeld
-    # googleAnalyticsID: "G-XXXXX"
-    DateFormat: "January 2006"
-    defaultTheme: light
-    hideFooter: false
-    disableThemeToggle: true
-    ShowShareButtons: false
-    ShowReadingTime: false
-    disableSpecial1stPost: true
-    disableAnchoredHeadings: true
-    ShowPostNavLinks: false
-    ShowBreadCrumbs: false
-    ShowCodeCopyButtons: true
-    ShowAllPagesInArchive: false
-    MainSections: ["books","courses","papers","data"]
-    ShowToc: false
-    disableScrollToTop: true
-    TocOpen: true
-    ShowWordCount: false
-    UseHugoToc: true
-    comments: false
-    math: true
-    author: Sheetal Jadhav
-    profileMode:
-          enabled: true
-          title: Sheetal Jadhav
-          subtitle: "I com[utational neuroscience researcher ...."
-          label: Sheetal Jadhav
-          imageUrl: "picture.jpeg"
-          imageWidth: 160
-          imageHeight: 160
-          buttons:
-            - name: Projects
-              url: papers/
-            - name: Simulations
-              url: simulations/
-            - name: Study Notes
-              url: notes/
-            - name: Personal Essays
-              url: books/
-            - name: Sci Comm.
-              url: https://www.instagram.com/onlybrainytales/
-
-    socialIcons:
-        - name: CV
-          url: cv.pdf
-        - name: Email
-          url: mailto:31jsheetal@gmail.com
-        - name: Substack
-          url: https://substack.com/@yoursthoughtfully?utm_campaign=profile&utm_medium=profile-page
-        - name: Google Scholar
-          url: https://scholar.google.com/citations?user=cL23w-4AAAAJ
-        - name: GitHub
-          url: https://github.com/sheetal-jadhav
-        - name: Twitter
-          url: https://x.com/_curiousneuron
-        - name: Bluesky
-          url: https://bsky.app/profile/thecuriousneuron.bsky.social
-        - name: Location
-          url: location/
-
-    assets:
-        disableScrollBarStyle: true
-    cover:
-        hiddenInList: false
-        hiddenInSingle: true
-    label:
-      text: "Moritz-Maria von Igelfeld"
-      icon: favicon.ico
-      iconHeight: 18
-
+  description: "This website hosts Sheetal Jadhav's research papers, course materials, projects, curriculum vitae, and contact information."
+  author: Sheetal Jadhav
+  DateFormat: "January 2006"
+  defaultTheme: light
+  hideFooter: false
+  disableThemeToggle: true
+  ShowShareButtons: false
+  ShowReadingTime: false
+  disableSpecial1stPost: true
+  disableAnchoredHeadings: true
+  ShowPostNavLinks: false
+  ShowBreadCrumbs: false
+  ShowCodeCopyButtons: true
+  ShowAllPagesInArchive: false
+  MainSections: ["books","courses","papers","data"]
+  ShowToc: false
+  disableScrollToTop: true
+  TocOpen: true
+  ShowWordCount: false
+  UseHugoToc: true
+  comments: false
+  math: true
+  profileMode:
+    enabled: true
+    title: Sheetal Jadhav
+    subtitle: "I am a computational neuroscience researcher interested in neural dynamics, sequence learning, and biophysical modeling."
+    imageUrl: "picture.jpeg"
+    imageWidth: 160
+    imageHeight: 160
+    buttons:
+      - name: Projects
+        url: papers/
+      - name: Simulations
+        url: simulations/
+      - name: Study Notes
+        url: notes/
+      - name: Personal Essays
+        url: books/
+      - name: Sci Comm.
+        url: https://www.instagram.com/onlybrainytales/
+  socialIcons:
+    - name: CV
+      url: cv.pdf
+    - name: Email
+      url: mailto:31jsheetal@gmail.com
+    - name: Substack
+      url: https://substack.com/@yoursthoughtfully
+    - name: Google Scholar
+      url: https://scholar.google.com/citations?user=cL23w-4AAAAJ
+    - name: GitHub
+      url: https://github.com/sheetal-jadhav
+    - name: Twitter
+      url: https://x.com/_curiousneuron
+    - name: Bluesky
+      url: https://bsky.app/profile/thecuriousneuron.bsky.social
+    - name: Location
+      url: location/
+  assets:
+    disableScrollBarStyle: true
+  cover:
+    hiddenInList: false
+    hiddenInSingle: true
+label:
+  text: "Sheetal Jadhav"
+  icon: favicon.ico
+  iconHeight: 18
 markup:
-    goldmark:
-        renderer:
-            unsafe: true
-    highlight:
-        guessSyntax: true
-        style: autumn 
-    tableOfContents:
-        endLevel: 2
-        ordered: false
-        startLevel: 2
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    guessSyntax: true
+    style: autumn
+  tableOfContents:
+    endLevel: 2
+    ordered: false
+    startLevel: 2
