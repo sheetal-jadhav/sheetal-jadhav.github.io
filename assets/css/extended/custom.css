@@ -1,4 +1,19 @@
-.profile h1, .profile span, .profile a {
-  color: #ffffff !important;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+/* Make body transparent so Vanta background shows through */
+body {
+  background: transparent !important;
+}
+
+/* Keep header white/opaque like normal */
+header.header {
+  background: var(--theme) !important;
+}
+
+/* Keep the main content area white/opaque */
+.main {
+  background: var(--theme) !important;
+}
+
+/* Keep footer opaque */
+footer.footer {
+  background: var(--theme) !important;
 }
