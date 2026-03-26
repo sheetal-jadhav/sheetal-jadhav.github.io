@@ -6,7 +6,10 @@ html {
   background: #0a091e !important;
 }
 
-body, #top, .main, .profile {
+/* ALL backgrounds transparent so Vanta shows through everywhere */
+body, #top, .main, .profile,
+footer.footer, .footer,
+header.header, .header {
   background: transparent !important;
 }
 
@@ -41,7 +44,7 @@ p, span, a, li {
   background: rgba(255,255,255,0.2) !important;
 }
 
-/* Footer */
+/* Footer text */
 footer.footer, footer.footer a {
   color: rgba(255,255,255,0.6) !important;
 }
