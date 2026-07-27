@@ -67,10 +67,6 @@ params:
       - name: Sci Comm.
         url: https://www.instagram.com/onlybrainytales/
   socialIcons:
-    - name: CV
-      url: cv.pdf
-    - name: Email
-      url: mailto:31jsheetal@gmail.com
     - name: Substack
       url: https://substack.com/@yoursthoughtfully
     - name: Google Scholar
