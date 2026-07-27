@@ -9,21 +9,21 @@ taxonomies:
   tag: tags
 menu:
   main:
+    - name: CV
+      url: cv.pdf
+      weight: 1
     - name: Projects
       url: papers/
       weight: 2
-    - name: Simulations
-      url: simulations/
-      weight: 3
     - name: Study Notes
       url: notes/
-      weight: 4
+      weight: 3
     - name: Personal Essays
       url: books/
-      weight: 5
+      weight: 4
     - name: Sci Comm.
       url: https://www.instagram.com/onlybrainytales/
-      weight: 6
+      weight: 5
 params:
   description: "This website hosts Sheetal Jadhav's research papers, course materials, projects, curriculum vitae, and contact information."
   author: Sheetal Jadhav
@@ -56,10 +56,10 @@ params:
     imageWidth: 160
     imageHeight: 160
     buttons:
+      - name: CV
+        url: cv.pdf
       - name: Projects
         url: papers/
-      - name: Simulations
-        url: simulations/
       - name: Study Notes
         url: notes/
       - name: Personal Essays
