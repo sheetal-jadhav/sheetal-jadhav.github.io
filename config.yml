@@ -38,6 +38,7 @@ params:
   ShowPostNavLinks: false
   ShowBreadCrumbs: false
   ShowCodeCopyButtons: true
+  ShowRssButtonInSectionTermList: false
   ShowAllPagesInArchive: false
   MainSections: ["books","courses","papers","data"]
   ShowToc: false
@@ -87,10 +88,10 @@ params:
   cover:
     hiddenInList: false
     hiddenInSingle: true
-label:
-  text: "Sheetal Jadhav"
-  icon: favicon.ico
-  iconHeight: 18
+  label:
+    text: "Sheetal Jadhav"
+    icon: favicon.ico
+    iconHeight: 18
 markup:
   goldmark:
     renderer:
