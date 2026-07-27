@@ -10,7 +10,7 @@ taxonomies:
 menu:
   main:
     - name: CV
-              url: cv/
+      url: cv/
       weight: 1
     - name: Projects
       url: papers/
@@ -39,8 +39,8 @@ params:
   ShowBreadCrumbs: false
   ShowCodeCopyButtons: true
   ShowRssButtonInSectionTermList: false
-  ShowAllPagesInArchive: false
-  MainSections: ["books","courses","papers","data"]
+  ShowAllPagesInArchive: true
+  ShowPageNums: true
   ShowToc: false
   disableScrollToTop: true
   TocOpen: true
@@ -57,7 +57,7 @@ params:
     imageHeight: 160
     buttons:
       - name: CV
-        url: cv.pdf
+        url: cv/
       - name: Projects
         url: papers/
       - name: Study Notes
@@ -68,9 +68,9 @@ params:
         url: https://www.instagram.com/onlybrainytales/
   socialIcons:
     - name: Substack
-      url: https://substack.com/@yoursthoughtfully
-    - name: Google Scholar
-      url: https://scholar.google.com/citations?user=cL23w-4AAAAJ
+      url: https://substack.com/@yourthoughtfully
+    - name: GoogleScholar
+      url: https://scholar.google.com/citations?user=cL23W-4AAAAJ
     - name: GitHub
       url: https://github.com/sheetal-jadhav
     - name: Twitter
@@ -97,5 +97,3 @@ markup:
     style: autumn
   tableOfContents:
     endLevel: 2
-    ordered: false
-    startLevel: 2
