@@ -89,6 +89,8 @@ params:
       url: https://x.com/_curiousneuron
     - name: Bluesky
       url: https://bsky.app/profile/thecuriousneuron.bsky.social
+    - name: Instagram
+      url: https://www.instagram.com/ek.chayachitrakaar/
     - name: Location
       url: location/
   assets:
