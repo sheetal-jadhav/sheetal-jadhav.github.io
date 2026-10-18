@@ -2,3 +2,14 @@
 .profile .profile_inner span p + p {
   margin-top: 0.8em;
 }
+
+/* Instagram icon: solid style to match the other icons */
+.social-icons a[title="Instagram"] svg rect {
+  fill: rgb(17, 17, 17) !important;
+  stroke: rgb(17, 17, 17);
+}
+.social-icons a[title="Instagram"] svg path,
+.social-icons a[title="Instagram"] svg line {
+  fill: none !important;
+  stroke: rgb(245, 245, 245);
+}
