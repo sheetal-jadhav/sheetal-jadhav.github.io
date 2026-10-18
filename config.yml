@@ -12,18 +12,24 @@ menu:
     - name: CV
       url: cv/
       weight: 1
-    - name: Projects
+    - name: Research Projects
       url: papers/
       weight: 2
-    - name: Study Notes
-      url: notes/
-      weight: 3
     - name: Personal Essays
       url: books/
+      weight: 3
+    - name: Photography
+      url: photography/
       weight: 4
     - name: Sci Comm.
       url: https://www.instagram.com/onlybrainytales/
       weight: 5
+    - name: The Neuroscience Scholars Collective
+      url: collective/
+      weight: 6
+    - name: Study Notes
+      url: notes/
+      weight: 7
 params:
   description: "This website hosts Sheetal Jadhav's research papers, course materials, projects, curriculum vitae, and contact information."
   author: Sheetal Jadhav
@@ -58,14 +64,18 @@ params:
     buttons:
       - name: CV
         url: cv/
-      - name: Projects
+      - name: Research Projects
         url: papers/
-      - name: Study Notes
-        url: notes/
       - name: Personal Essays
         url: books/
+      - name: Photography
+        url: photography/
       - name: Sci Comm.
         url: https://www.instagram.com/onlybrainytales/
+      - name: The Neuroscience Scholars Collective
+        url: collective/
+      - name: Study Notes
+        url: notes/
   socialIcons:
     - name: Substack
       url: https://substack.com/@yourthoughtfully
