@@ -1,0 +1,11 @@
+/* Profile photo: show the full rectangular picture instead of a circle */
+.profile img {
+  border-radius: 12px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Space between bio paragraphs */
+.profile .profile_inner span p + p {
+  margin-top: 0.8em;
+}
