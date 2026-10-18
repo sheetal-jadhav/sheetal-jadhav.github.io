@@ -78,7 +78,7 @@ params:
         url: notes/
   socialIcons:
     - name: Substack
-      url: https://substack.com/@yourthoughtfully
+      url: https://yoursthoughtfully.substack.com/
     - name: GoogleScholar
       url: https://scholar.google.com/citations?user=cL23W-4AAAAJ
     - name: LinkedIn
