@@ -100,8 +100,8 @@ params:
     hiddenInSingle: true
   label:
     text: "Sheetal Jadhav"
-    icon: favicon.ico
-    iconHeight: 18
+    icon: picture.jpeg
+    iconHeight: 28
 markup:
   goldmark:
     renderer:
