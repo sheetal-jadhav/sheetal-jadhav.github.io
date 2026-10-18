@@ -13,3 +13,8 @@
   fill: none !important;
   stroke: rgb(245, 245, 245);
 }
+
+/* Round profile photo next to the name in the header */
+.logo a img {
+  border-radius: 50%;
+}
