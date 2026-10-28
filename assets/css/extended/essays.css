@@ -78,8 +78,8 @@
 .essay-cover img {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
-  object-position: center 35%;
+  object-position: center 55%;
   margin: 0;
 }
