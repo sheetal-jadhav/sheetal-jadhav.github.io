@@ -13,11 +13,12 @@
   --sj-border: #30343c;      /* borders */
   --sj-chip: rgba(255, 255, 255, 0.14); /* tag chips on essay cards */
 
-  /* essay card colours (they repeat in this order) */
-  --sj-tone-0: #22252c;
-  --sj-tone-1: #16606e;
-  --sj-tone-2: #2f5c45;
-  --sj-tone-3: #5a3f66;
+  /* essay card colours (they repeat in this order) + their text colours */
+  --sj-tone-0: #0e0f12;  --sj-on-tone-0: #e9e9ec;  /* black */
+  --sj-tone-1: #f2f2f3;  --sj-on-tone-1: #111111;  /* white */
+  --sj-tone-2: #3a3d44;  --sj-on-tone-2: #e9e9ec;  /* grey */
+  --sj-tone-3: #c7c8cc;  --sj-on-tone-3: #111111;  /* light grey */
+  --sj-chip-light: rgba(0, 0, 0, 0.08); /* tag chips on light cards */
 
   /* theme internals (keep in sync with the colours above) */
   --theme: #17191e;

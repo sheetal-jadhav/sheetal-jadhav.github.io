@@ -34,5 +34,5 @@ footer.footer, footer.footer a, footer.footer span { color: var(--sj-muted) !imp
 .essay-tone-2 *, .essay-tone-2 .essay-title { color: var(--sj-on-tone-2, var(--sj-ink)) !important; }
 .essay-tone-3 *, .essay-tone-3 .essay-title { color: var(--sj-on-tone-3, var(--sj-ink)) !important; }
 .essay-card .essay-tags li { background: var(--sj-chip, rgba(255,255,255,0.55)) !important; }
-.essay-tone-0 .essay-tags li { background: var(--sj-button) !important; }
+.essay-tone-1 .essay-tags li, .essay-tone-3 .essay-tags li { background: var(--sj-chip-light, rgba(0,0,0,0.08)) !important; }
 .essay-date { border-top-color: rgba(127,127,127,0.25) !important; }
