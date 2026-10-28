@@ -5,9 +5,9 @@ date: 2025-12-31
 summary: "Put on a happy face."
 tags: ["Reflections"]
 cover:
-  image: "https://images.unsplash.com/photo-1568417854236-4a8c5043d34e?fm=jpg&q=75&w=1400&auto=format&fit=crop"
-  alt: "Person in Joker costume and face paint on a staircase"
-  caption: "Photo by [Daniel Lincoln](https://unsplash.com/@danny_lincoln) on [Unsplash](https://unsplash.com/photos/the-joker-costume-eNSamRr1bdc)"
+  image: "https://images.unsplash.com/photo-1533740795835-8f0320846018?fm=jpg&q=75&w=1400&auto=format&fit=crop"
+  alt: "A Joker playing card falling through the air"
+  caption: "Photo by [Quentin Rey](https://unsplash.com/@quentinreyphoto) on [Unsplash](https://unsplash.com/photos/close-up-photography-of-joker-card-Os1gNJtK_Rw)"
   hiddenInSingle: false
 ---
 
