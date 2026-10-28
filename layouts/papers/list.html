@@ -1,0 +1,31 @@
+{{- define "main" }}
+<div class="projects-wrap">
+  <header class="page-header">
+    <h1>{{ .Title }}</h1>
+    {{- with .Params.intro }}<p class="projects-intro">{{ . }}</p>{{ end }}
+  </header>
+
+  <div class="projects-grid">
+    {{- range .Params.projects }}
+    <article class="project-card">
+      {{- with .image }}
+      <div class="project-cover"><img src="{{ . | relURL }}" alt="" loading="lazy"></div>
+      {{- end }}
+      <div class="project-body">
+        {{- with .status }}<span class="project-status">{{ . }}</span>{{ end }}
+        <h2 class="project-title">{{ .title }}</h2>
+        {{- with .summary }}<p class="project-summary">{{ . }}</p>{{ end }}
+        {{- with .tags }}
+        <ul class="project-tags">
+          {{- range . }}<li>{{ . }}</li>{{ end }}
+        </ul>
+        {{- end }}
+      </div>
+      {{- with .link }}
+      <a class="project-link" href="{{ . }}" aria-label="Open project"></a>
+      {{- end }}
+    </article>
+    {{- end }}
+  </div>
+</div>
+{{- end }}
