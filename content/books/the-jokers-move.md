@@ -4,6 +4,11 @@ essay: true
 date: 2025-12-31
 summary: "Put on a happy face."
 tags: ["Reflections"]
+cover:
+  image: "https://images.unsplash.com/photo-1568417854236-4a8c5043d34e?fm=jpg&q=75&w=1400&auto=format&fit=crop"
+  alt: "Person in Joker costume and face paint on a staircase"
+  caption: "Photo by [Daniel Lincoln](https://unsplash.com/@danny_lincoln) on [Unsplash](https://unsplash.com/photos/the-joker-costume-eNSamRr1bdc)"
+  hiddenInSingle: false
 ---
 
 I heard Alan Watts say somewhere that anxiety and laughter have the same origin, and that got me thinking, how is that even possible?
