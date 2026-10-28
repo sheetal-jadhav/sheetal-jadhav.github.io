@@ -6,24 +6,22 @@
   </header>
 
   <div class="projects-grid">
-    {{- range .Params.projects }}
+    {{- range (where .RegularPages "Params.project" true).ByWeight }}
     <article class="project-card">
-      {{- with .image }}
+      {{- with .Params.cover.image }}
       <div class="project-cover"><img src="{{ . | relURL }}" alt="" loading="lazy"></div>
       {{- end }}
       <div class="project-body">
-        {{- with .status }}<span class="project-status">{{ . }}</span>{{ end }}
-        <h2 class="project-title">{{ .title }}</h2>
-        {{- with .summary }}<p class="project-summary">{{ . }}</p>{{ end }}
-        {{- with .tags }}
+        {{- with .Params.status }}<span class="project-status">{{ . }}</span>{{ end }}
+        <h2 class="project-title">{{ .Title }}</h2>
+        {{- with .Params.summary }}<p class="project-summary">{{ . }}</p>{{ end }}
+        {{- with .Params.tags }}
         <ul class="project-tags">
           {{- range . }}<li>{{ . }}</li>{{ end }}
         </ul>
         {{- end }}
       </div>
-      {{- with .link }}
-      <a class="project-link" href="{{ . }}" aria-label="Open project"></a>
-      {{- end }}
+      <a class="project-link" href="{{ .Permalink }}" aria-label="Read more about {{ .Title }}"></a>
     </article>
     {{- end }}
   </div>
