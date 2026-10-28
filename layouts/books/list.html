@@ -10,9 +10,9 @@
 
   <div class="essays-grid" id="essays-grid">
     {{- range $i, $p := (where .RegularPages "Params.essay" true).ByDate.Reverse }}
-    <article class="essay-card essay-tone-{{ mod $i 4 }}" data-search="{{ lower (printf "%s %s %s" .Title (.Params.summary | default "") (delimit (.Params.tags | default (slice)) " ")) }}">
+    <article class="essay-card essay-tone-{{ mod $i 4 }}{{ if .Params.cover.image }} has-cover{{ end }}" data-search="{{ lower (printf "%s %s %s" .Title (.Params.summary | default "") (delimit (.Params.tags | default (slice)) " ")) }}">
       {{- with .Params.cover.image }}
-      <div class="essay-cover"><img src="{{ . | relURL }}" alt="" loading="lazy"></div>
+      <img class="essay-bg" src="{{ . | relURL }}" alt="" loading="lazy">
       {{- end }}
       <div class="essay-body">
         <h2 class="essay-title">{{ .Title }}</h2>
