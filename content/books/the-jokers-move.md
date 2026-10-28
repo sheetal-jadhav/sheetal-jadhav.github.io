@@ -5,9 +5,8 @@ date: 2025-12-31
 summary: "Put on a happy face."
 tags: ["Reflections"]
 cover:
-  image: "https://images.unsplash.com/photo-1533740795835-8f0320846018?fm=jpg&q=75&w=1400&auto=format&fit=crop"
-  alt: "A Joker playing card falling through the air"
-  caption: "Photo by [Quentin Rey](https://unsplash.com/@quentinreyphoto) on [Unsplash](https://unsplash.com/photos/close-up-photography-of-joker-card-Os1gNJtK_Rw)"
+  image: "/images/essays/jokers-move.jpg"
+  alt: "A worn Joker playing card propped against a wooden beam"
   hiddenInSingle: false
 ---
 
