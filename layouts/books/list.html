@@ -8,6 +8,9 @@
   <div class="essays-grid">
     {{- range $i, $p := (where .RegularPages "Params.essay" true).ByDate.Reverse }}
     <article class="essay-card essay-tone-{{ mod $i 4 }}">
+      {{- with .Params.cover.image }}
+      <div class="essay-cover"><img src="{{ . | relURL }}" alt="" loading="lazy"></div>
+      {{- end }}
       <div class="essay-body">
         <h2 class="essay-title">{{ .Title }}</h2>
         {{- with .Params.tags }}
