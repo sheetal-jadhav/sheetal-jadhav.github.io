@@ -1,0 +1,26 @@
+{{- define "main" }}
+<div class="essays-wrap">
+  <header class="page-header">
+    <h1>{{ .Title }}</h1>
+    {{- with .Params.intro }}<p class="projects-intro">{{ . }}</p>{{ end }}
+  </header>
+
+  <div class="essays-grid">
+    {{- range $i, $p := (where .RegularPages "Params.essay" true).ByDate.Reverse }}
+    <article class="essay-card essay-tone-{{ mod $i 4 }}">
+      <div class="essay-body">
+        <h2 class="essay-title">{{ .Title }}</h2>
+        {{- with .Params.tags }}
+        <ul class="essay-tags">
+          {{- range . }}<li>{{ . }}</li>{{ end }}
+        </ul>
+        {{- end }}
+        {{- with .Params.summary }}<p class="essay-summary">{{ . }}</p>{{ end }}
+      </div>
+      <footer class="essay-date">{{ .Date.Format "02 January 2006" }}</footer>
+      <a class="project-link" href="{{ .Permalink }}" aria-label="Read {{ .Title }}"></a>
+    </article>
+    {{- end }}
+  </div>
+</div>
+{{- end }}
