@@ -1,0 +1,31 @@
+/* ==========================================================
+   SITE COLOUR PALETTE: "Midnight"
+   Change any hex code below to recolour the whole website.
+   ========================================================== */
+:root {
+  --sj-bg: #17191e;          /* page background */
+  --sj-ink: #e9e9ec;         /* main text */
+  --sj-muted: #a3a6ad;       /* secondary text, footer */
+  --sj-accent: #5cc0d4;      /* links, active menu, tags, hover */
+  --sj-on-accent: #0d1114;   /* text on accent-coloured buttons */
+  --sj-surface: #22252c;     /* cards */
+  --sj-button: #2a2e36;      /* home page buttons */
+  --sj-border: #30343c;      /* borders */
+  --sj-chip: rgba(255, 255, 255, 0.14); /* tag chips on essay cards */
+
+  /* essay card colours (they repeat in this order) */
+  --sj-tone-0: #22252c;
+  --sj-tone-1: #16606e;
+  --sj-tone-2: #2f5c45;
+  --sj-tone-3: #5a3f66;
+
+  /* theme internals (keep in sync with the colours above) */
+  --theme: #17191e;
+  --entry: #22252c;
+  --primary: #e9e9ec;
+  --secondary: #a3a6ad;
+  --tertiary: #30343c;
+  --content: #e9e9ec;
+  --border: #30343c;
+  --code-bg: #22252c;
+}

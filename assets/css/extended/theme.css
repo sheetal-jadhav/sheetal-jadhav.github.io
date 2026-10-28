@@ -1,0 +1,38 @@
+/* Site-wide colour theme. Colours come from palette.css */
+html, body, body.list, .header, .nav, .main, footer.footer { background: var(--sj-bg) !important; color: var(--sj-ink) !important; }
+.profile h1, .profile span, .profile p, .profile a,
+h1, h2, h3, h4, h5, h6, p, span, a, li { color: var(--sj-ink) !important; }
+.post-content a, .projects-intro a { color: var(--sj-accent) !important; box-shadow: 0 1px 0 var(--sj-accent) !important; }
+.projects-intro { color: var(--sj-muted) !important; }
+#menu a, #menu a span { color: var(--sj-ink) !important; }
+#menu .active, #menu .active span { border-bottom-color: var(--sj-accent) !important; }
+#menu .active span, #menu .active { color: var(--sj-accent) !important; }
+.profile .buttons a { background: var(--sj-button) !important; border: 1px solid var(--sj-border) !important; color: var(--sj-ink) !important; }
+.profile .buttons a:hover { background: var(--sj-accent) !important; border-color: var(--sj-accent) !important; }
+.profile .buttons a:hover, .profile .buttons a:hover * { color: var(--sj-on-accent) !important; }
+.social-icons a svg { fill: var(--sj-ink) !important; }
+.social-icons a:hover svg { fill: var(--sj-accent) !important; }
+.social-icons a[title="Instagram"] svg rect { fill: var(--sj-ink) !important; stroke: var(--sj-ink); }
+.social-icons a[title="Instagram"] svg path, .social-icons a[title="Instagram"] svg line { stroke: var(--sj-bg); }
+footer.footer, footer.footer a, footer.footer span { color: var(--sj-muted) !important; }
+.post-tags a { background: var(--sj-surface) !important; border-color: var(--sj-border) !important; }
+
+/* Project cards */
+.project-card { background: var(--sj-surface) !important; border-color: var(--sj-border) !important; }
+.project-summary { color: var(--sj-muted) !important; }
+.project-status { color: var(--sj-accent) !important; }
+.project-tags li { border-color: var(--sj-accent) !important; color: var(--sj-accent) !important; }
+
+/* Essay cards */
+.essay-card { border-color: var(--sj-border) !important; }
+.essay-tone-0 { background: var(--sj-tone-0) !important; }
+.essay-tone-1 { background: var(--sj-tone-1) !important; }
+.essay-tone-2 { background: var(--sj-tone-2) !important; }
+.essay-tone-3 { background: var(--sj-tone-3) !important; }
+.essay-tone-0 *, .essay-tone-0 .essay-title { color: var(--sj-on-tone-0, var(--sj-ink)) !important; }
+.essay-tone-1 *, .essay-tone-1 .essay-title { color: var(--sj-on-tone-1, var(--sj-ink)) !important; }
+.essay-tone-2 *, .essay-tone-2 .essay-title { color: var(--sj-on-tone-2, var(--sj-ink)) !important; }
+.essay-tone-3 *, .essay-tone-3 .essay-title { color: var(--sj-on-tone-3, var(--sj-ink)) !important; }
+.essay-card .essay-tags li { background: var(--sj-chip, rgba(255,255,255,0.55)) !important; }
+.essay-tone-0 .essay-tags li { background: var(--sj-button) !important; }
+.essay-date { border-top-color: rgba(127,127,127,0.25) !important; }
