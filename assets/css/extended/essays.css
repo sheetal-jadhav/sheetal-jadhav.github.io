@@ -75,14 +75,32 @@
   .essays-grid { grid-template-columns: 1fr; }
 }
 
-.essay-cover img {
-  display: block;
+/* Cards with a cover photo: photo sits behind the text, card keeps its normal size */
+.essay-card.has-cover { isolation: isolate; }
+.essay-card .essay-bg {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 100%;
   object-fit: cover;
   object-position: center 55%;
   margin: 0;
+  z-index: -2;
 }
+.essay-card.has-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.78) 100%);
+  transition: background 0.2s ease;
+}
+.essay-card.has-cover:hover::after {
+  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.72) 100%);
+}
+.essays-grid .essay-card.has-cover * { color: #ffffff !important; }
+.essays-grid .essay-card.has-cover .essay-tags li { background: rgba(255,255,255,0.18) !important; }
+.essays-grid .essay-card.has-cover .essay-date { border-top-color: rgba(255,255,255,0.2) !important; }
 
 /* Search bar */
 .essay-search {
