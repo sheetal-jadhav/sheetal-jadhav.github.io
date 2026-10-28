@@ -131,3 +131,13 @@
 /* summary sits above tags */
 .essay-summary { margin: 0 0 14px; }
 .essay-tags { margin: 0; }
+
+/* Smaller cover photo at the top of essay and project pages */
+.post-single .entry-cover img {
+  width: 100%;
+  max-height: 340px;
+  object-fit: cover;
+  object-position: center 55%;
+  border-radius: 12px;
+}
+.post-single .entry-cover { margin-bottom: 28px; }
