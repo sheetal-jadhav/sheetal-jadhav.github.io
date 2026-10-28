@@ -99,3 +99,6 @@
     transform: none;
   }
 }
+
+.project-card { cursor: pointer; }
+.project-card:hover .project-title { text-decoration: underline; text-underline-offset: 3px; }
