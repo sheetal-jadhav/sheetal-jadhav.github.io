@@ -4,11 +4,11 @@ project: true
 weight: -1
 status: "Current"
 summary: "Impact Scholars Program 2026, Team In Orbit: Sheetal Jadhav, Giorgio Li Pira, Chiara Gorlini, Jean-Yves Montenay, Mariem Younssi."
-credit: "Cover image: Ghani, Yang & International Brain Laboratory, iScience (2026)"
+credit: "Cover image: International Brain Laboratory task schematic"
 cover:
-  image: "/images/projects/vlofc-belief.jpg"
-  alt: "Head-fixed mouse turning a wheel to move a visual grating on a screen"
-  caption: "Cover image: graphical abstract from Naureen Ghani, Angela Yaxuan Yang & International Brain Laboratory, [Active sensing during a visual perceptual decision-making task](https://doi.org/10.1016/j.isci.2026.115976), *iScience* (2026). Used under a Creative Commons license."
+  image: "/images/projects/vlofc-belief-task.jpg"
+  alt: "Top-down view of a head-fixed mouse turning a wheel to move a grating to the centre of a screen: correct turns earn a water reward, wrong turns do not"
+  caption: "Cover image: steering-wheel visual decision-making task schematic, [International Brain Laboratory](https://www.internationalbrainlab.com/)."
   hiddenInSingle: false
 hideMeta: true
 ---
