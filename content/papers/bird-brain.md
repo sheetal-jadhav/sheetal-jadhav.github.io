@@ -1,7 +1,7 @@
 ---
 title: "Building the Bird Brain"
 project: true
-weight: 2
+weight: 3
 summary: "How a zebra finch's brain prepares, produces and corrects its song, from in vivo recordings of song circuits to computational models of the same circuits."
 tags: ["Birdsong", "Electrophysiology", "Modelling"]
 credit: "Cover art: Amirmasoud Ahmadi, The Journal of Neuroscience cover, Vol. 46, No. 43 (28 Oct 2026)"
