@@ -8,10 +8,10 @@ h1, h2, h3, h4, h5, h6, p, span, a, li { color: var(--sj-ink) !important; }
 #menu .active, #menu .active span { border-bottom-color: var(--sj-accent) !important; }
 #menu .active span, #menu .active { color: var(--sj-accent) !important; }
 .profile .buttons a { background: var(--sj-button) !important; border: 1px solid var(--sj-border) !important; color: var(--sj-ink) !important; }
-.profile .buttons a:hover { background: var(--sj-accent) !important; border-color: var(--sj-accent) !important; }
-.profile .buttons a:hover, .profile .buttons a:hover * { color: var(--sj-on-accent) !important; }
+.profile .buttons a:hover { background: var(--sj-hover) !important; border-color: var(--sj-hover) !important; }
+.profile .buttons a:hover, .profile .buttons a:hover * { color: var(--sj-on-hover) !important; }
 .social-icons a svg { fill: var(--sj-ink) !important; }
-.social-icons a:hover svg { fill: var(--sj-accent) !important; }
+.social-icons a:hover svg { fill: var(--sj-hover) !important; }
 .social-icons a[title="Instagram"] svg rect { fill: var(--sj-ink) !important; stroke: var(--sj-ink); }
 .social-icons a[title="Instagram"] svg path, .social-icons a[title="Instagram"] svg line { stroke: var(--sj-bg); }
 footer.footer, footer.footer a, footer.footer span { color: var(--sj-muted) !important; }
