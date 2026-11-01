@@ -8,6 +8,8 @@
   --sj-muted: #a3a6ad;       /* secondary text, footer */
   --sj-accent: #5cc0d4;      /* links, active menu, tags, hover */
   --sj-on-accent: #0d1114;   /* text on accent-coloured buttons */
+  --sj-hover: #8a5cf5;       /* button & icon hover (Obsidian purple) */
+  --sj-on-hover: #ffffff;    /* text on hovered buttons */
   --sj-surface: #22252c;     /* cards */
   --sj-button: #2a2e36;      /* home page buttons */
   --sj-border: #30343c;      /* borders */
