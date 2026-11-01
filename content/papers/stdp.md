@@ -1,6 +1,7 @@
 ---
 title: "Reimplementing Spike-Timing-Dependent Plasticity"
 project: true
+draft: true
 weight: 3
 summary: "Reimplementation of STDP learning during a CIDAS Fellowship in Göttingen."
 tags: ["STDP", "Plasticity", "Modelling"]

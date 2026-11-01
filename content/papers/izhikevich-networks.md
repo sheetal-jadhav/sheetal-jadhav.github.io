@@ -1,6 +1,7 @@
 ---
 title: "Spiking Networks with Izhikevich Neurons"
 project: true
+draft: true
 weight: 4
 summary: "Computational modelling of spiking neural circuits using Izhikevich-type neurons."
 tags: ["Spiking networks", "Modelling"]

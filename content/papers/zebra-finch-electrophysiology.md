@@ -1,6 +1,7 @@
 ---
 title: "Electrophysiology in Zebra Finches"
 project: true
+draft: true
 weight: 5
 summary: "In vivo electrophysiology in zebra finches at IISER Pune."
 tags: ["Electrophysiology", "Birdsong", "Experiments"]

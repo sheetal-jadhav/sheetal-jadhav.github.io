@@ -1,6 +1,7 @@
 ---
 title: "Large-Scale Calcium Imaging Analysis"
 project: true
+draft: true
 weight: 2
 summary: "Analysis of large-scale calcium imaging recordings in Marius Pachitariu's lab at Janelia Research Campus."
 tags: ["Calcium imaging", "Data analysis"]
