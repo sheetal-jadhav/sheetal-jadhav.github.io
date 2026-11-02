@@ -116,7 +116,7 @@
   color: var(--sj-muted, #666);
   transition: border-color 0.2s ease;
 }
-.essay-search:focus-within { border-color: var(--sj-accent, #2f6fd6); }
+.essay-search:focus-within { border-color: var(--sj-accent, #8a5cf5); }
 .essay-search input {
   flex: 1;
   border: 0;

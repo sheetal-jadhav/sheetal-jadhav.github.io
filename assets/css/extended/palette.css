@@ -6,8 +6,8 @@
   --sj-bg: #17191e;          /* page background */
   --sj-ink: #e9e9ec;         /* main text */
   --sj-muted: #a3a6ad;       /* secondary text, footer */
-  --sj-accent: #5cc0d4;      /* links, active menu, tags, hover */
-  --sj-on-accent: #0d1114;   /* text on accent-coloured buttons */
+  --sj-accent: #8a5cf5;      /* links, active menu, tags (Obsidian purple, same as hover) */
+  --sj-on-accent: #ffffff;   /* text on accent-coloured buttons */
   --sj-hover: #8a5cf5;       /* button & icon hover (Obsidian purple) */
   --sj-on-hover: #ffffff;    /* text on hovered buttons */
   --sj-surface: #22252c;     /* cards */
