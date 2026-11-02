@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<nav class="site-back" style="max-width:1120px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))"><a href="/simulations/" style="font:500 14px/1.4 'IBM Plex Sans',system-ui,sans-serif;color:#8a5cf5;text-decoration:none">&larr; Interactive Simulations</a></nav>
+<title>HVC Ultra-Sparse Code</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,500;1,7..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: series template from Episode 01 — methods-paper column, experiment rows (text + controls | figures), synthesis, methods */
+:root {
+  --bg: #f3f5f5;
+  --paper: #ffffff;
+  --ink: #15212b;
+  --muted: #5a6a75;
+  --line: #d3dbdf;
+  --grid: #e6ecee;
+  --accent: #1f6a85;
+  --na: #c4432d;
+  --k: #2b62b5;
+  --leak: #6f7f43;
+  --ok: #2c7a4b;
+  --hvc: #c4432d;
+  --int: #2b62b5;
+  --hvx: #6f7f43;
+  --spec: #15212b;
+  --display: "Literata", Georgia, "Times New Roman", serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1418; --paper: #151d23; --ink: #e2e9ed; --muted: #8b9ba6; --line: #2a3640; --grid: #1f2930;
+    --accent: #6cc0d6; --na: #ff7b5e; --k: #75a8ff; --leak: #b3c47d; --ok: #6fd39a; --hvc: #ff7b5e; --int: #75a8ff; --hvx: #b3c47d; --spec: #e2e9ed; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1418; --paper: #151d23; --ink: #e2e9ed; --muted: #8b9ba6; --line: #2a3640; --grid: #1f2930;
+  --accent: #6cc0d6; --na: #ff7b5e; --k: #75a8ff; --leak: #b3c47d; --ok: #6fd39a; --hvc: #ff7b5e; --int: #75a8ff; --hvx: #b3c47d; --spec: #e2e9ed; color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--body); font-size: 15.5px; line-height: 1.55; }
+.wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding-block: 32px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 40px;
+}
+h1, h2, h3 { font-family: var(--display); font-weight: 500; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.05; }
+h1 em { font-style: italic; font-weight: 400; }
+h2 { font-size: clamp(22px, 2.6vw, 28px); line-height: 1.15; }
+h3 { font-size: 18px; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--muted); }
+a { color: var(--accent); }
+i.v { font-family: var(--display); font-style: italic; }
+
+/* header */
+header { display: grid; gap: 16px; }
+header .lede { max-width: 68ch; font-size: 17px; color: var(--muted); }
+.series { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.series li { background: var(--paper); padding: 12px; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.series .num { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .08em; }
+.series .t { font-size: 13px; line-height: 1.35; }
+.series .ref { font-family: var(--mono); font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
+@media (max-width: 860px) { .series { grid-template-columns: minmax(0, 1fr); } }
+
+.bar { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; background: var(--paper); color: var(--muted); padding: 7px 12px; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.status { font-size: 13px; color: var(--muted); max-width: 70ch; border-left: 3px solid var(--accent); padding-left: 12px; }
+.status b { color: var(--ink); font-weight: 600; }
+
+/* experiments */
+.exp { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 28px; padding-top: 28px; border-top: 1px solid var(--line); }
+@media (max-width: 900px) { .exp { grid-template-columns: minmax(0, 1fr); } }
+.exp-text { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.exp-text > p { font-size: 15px; }
+.controls { display: grid; gap: 12px; background: var(--paper); border: 1px solid var(--line); padding: 14px; }
+.field { display: grid; gap: 4px; }
+.field label { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.field output { font-family: var(--mono); font-size: 12.5px; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+select { font: 500 13px var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); padding: 7px 8px; border-radius: 3px; width: 100%; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 13px; }
+.check input { accent-color: var(--accent); }
+button { font: 500 13px var(--body); color: var(--ink); background: var(--paper); border: 1px solid var(--line); padding: 8px 12px; border-radius: 3px; cursor: pointer; }
+button:hover { border-color: var(--muted); }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.result { display: grid; gap: 6px; font-size: 13.5px; }
+.result h3 { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+.cmp { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-variant-numeric: tabular-nums; }
+.cmp dt { color: var(--muted); }
+.cmp dd { margin: 0; font-family: var(--mono); font-size: 13px; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11px; padding: 1px 7px; border-radius: 99px; border: 1px solid currentColor; }
+.pill.ok { color: var(--ok); }
+.pill.na { color: var(--muted); }
+
+.exp-plots { display: grid; gap: 14px; min-width: 0; align-content: start; }
+figure { margin: 0; background: var(--paper); border: 1px solid var(--line); padding: 10px 10px 8px; display: grid; gap: 6px; min-width: 0; align-content: start; }
+figure canvas { display: block; width: 100%; height: 240px; }
+figure canvas.short { height: 170px; }
+figcaption { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); }
+.key { display: inline-flex; align-items: center; gap: 6px; }
+.key::before { content: ""; width: 16px; height: 0; border-top: 2px solid var(--c, var(--ink)); }
+.key.dash::before { border-top-style: dashed; }
+.key.dot::before { width: 7px; height: 7px; border: 0; border-radius: 50%; background: var(--c); }
+.cap-title { color: var(--ink); font-weight: 500; margin-right: auto; }
+
+/* synthesis */
+.whole { display: grid; gap: 26px; padding-top: 28px; border-top: 1px solid var(--line); }
+.whole > header { gap: 10px; }
+.chain { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); background: var(--paper); }
+.chain li { padding: 14px 14px 14px 16px; display: grid; gap: 4px; align-content: start; border-right: 1px solid var(--line); position: relative; min-width: 0; }
+.chain li:last-child { border-right: 0; }
+.chain .stepn { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .08em; }
+.chain b { font-family: var(--display); font-weight: 500; font-size: 17px; }
+.chain p { font-size: 13px; color: var(--muted); }
+.chain a { font-size: 12px; font-family: var(--mono); }
+@media (max-width: 860px) { .chain { grid-template-columns: minmax(0, 1fr); } .chain li { border-right: 0; border-bottom: 1px solid var(--line); } .chain li:last-child { border-bottom: 0; } }
+.anatomy { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .anatomy { grid-template-columns: minmax(0, 1fr); } }
+.stack { display: grid; gap: 0; background: var(--paper); border: 1px solid var(--line); padding: 10px; min-width: 0; }
+.stack canvas { display: block; width: 100%; height: 190px; }
+.stack canvas + canvas { border-top: 1px dashed var(--grid); }
+.stack .scrub { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding-top: 10px; }
+.stack .scrub output { font-family: var(--mono); font-size: 12px; color: var(--accent); font-variant-numeric: tabular-nums; min-width: 7ch; text-align: right; }
+.phases { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 10px; }
+.phases button { font-size: 12px; padding: 5px 9px; }
+.phases button[aria-current="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.narr { display: grid; gap: 12px; background: var(--paper); border: 1px solid var(--line); padding: 16px; min-width: 0; }
+.narr h3 { font-size: 21px; }
+.narr .when { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.narr p { font-size: 14.5px; }
+.live { font-family: var(--mono); font-size: 12.5px; background: var(--bg); border: 1px solid var(--line); padding: 10px; display: grid; gap: 3px; overflow-x: auto; font-variant-numeric: tabular-nums; }
+.live .lhs { color: var(--muted); }
+.live .na { color: var(--na); } .live .k { color: var(--k); } .live .l { color: var(--leak); }
+.verdict { font-size: 13px; border-left: 3px solid var(--accent); padding-left: 10px; }
+.fitpred { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 36px; }
+@media (max-width: 860px) { .fitpred { grid-template-columns: minmax(0, 1fr); } }
+.fitpred ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+.legacy { max-width: 72ch; font-size: 15px; display: grid; gap: 10px; }
+
+/* methods */
+.methods { display: grid; gap: 22px; padding-top: 28px; border-top: 1px solid var(--line); }
+.mgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 36px; }
+@media (max-width: 860px) { .mgrid { grid-template-columns: minmax(0, 1fr); } }
+.eqs { display: grid; gap: 8px; background: var(--paper); border: 1px solid var(--line); padding: 16px; overflow-x: auto; }
+.eq { font-family: var(--display); font-size: 16px; white-space: nowrap; }
+.eq .no { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-left: 10px; }
+.eq sub, .eq sup { font-size: .72em; }
+.tbl-wrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 7px 12px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mlist { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 6px; }
+
+.playrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+figure canvas.tall { height: 340px; }
+figure canvas.spec { height: 110px; }
+figure canvas.tiny { height: 130px; }
+.note { font-size: 12.5px; color: var(--muted); }
+.tag-ill { display: inline-block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--line); padding: 1px 6px; border-radius: 3px; }
+.progress { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+.stack .scrub { grid-template-columns: auto auto minmax(0, 1fr) auto; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Neuro simulations · Episode 02</span>
+    <h1>One burst <em>per song</em></h1>
+    <p class="lede">Zebra finch song is driven by a forebrain clock. In nucleus HVC, each neuron that projects to RA fires a single brief burst at one precise moment of the song motif and is silent the rest of the time. This page rebuilds that ultra-sparse code from the numbers and equations in Hahnloser, Kozhevnikov &amp; Fee (2002).</p>
+    <ol class="series" aria-label="The paper and the circuit" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+      <li><span class="num">PAPER</span><span class="t">An ultra-sparse code underlies the generation of neural sequences in a songbird</span><span class="ref">Nature 419:65–70 (2002)</span></li>
+      <li><span class="num">HVC(RA)</span><span class="t">Projection neurons to RA: at most one burst per motif</span><span class="ref">n = 16, 3 birds (singing)</span></li>
+      <li><span class="num">HVC(X) · HVC(i)</span><span class="t">Area X projectors burst 0–5 times; interneurons fire densely</span><span class="ref">n = 30 · n = 31</span></li>
+      <li><span class="num">RA</span><span class="t">Motor nucleus: many bursts per motif, driven from HVC</span><span class="ref">→ vocal and respiratory motor neurons</span></li>
+    </ol>
+    <p class="status"><b>What is from the paper and what is assumed.</b> Burst statistics, timing jitter, sleep firing rates, correlation values and every equation come from the paper’s text and Methods, and are checked against it below. The song is synthetic (no recording could be used here). Interneuron rates during song, the HVC→RA weights and the synaptic kernel are illustrative; sections that use them carry an <span class="tag-ill">illustration</span> tag.</p>
+  </header>
+
+  <!-- 1 -->
+  <section class="exp" id="sing" aria-labelledby="s1t">
+    <div class="exp-text">
+      <span class="eyebrow">Fig. 2 · singing bird</span>
+      <h2 id="s1t">Ten neurons, ten renditions, one burst each</h2>
+      <p>Each row is one rendition of the motif and each block is one neuron. HVC(RA) neurons fire a brief burst at a single moment, and do so on every rendition with sub-millisecond jitter. Interneurons fire throughout the song. Press play to hear the motif and follow the cursor.</p>
+      <div class="controls">
+        <div class="playrow"><button type="button" class="primary" id="s1Play">Play song</button><button type="button" id="s1New">New neurons</button></div>
+        <div class="field"><label for="s1Jit">Burst-time jitter (r.m.s.) <output id="s1JitOut"></output></label><input type="range" id="s1Jit" min="0" max="10" step="0.02" value="0.66"></div>
+        <label class="check"><input type="checkbox" id="s1X"> Add two HVC(X) neurons (0–5 bursts per motif)</label>
+      </div>
+      <div class="result">
+        <h3>Measured with the paper’s burst criterion</h3>
+        <dl class="cmp" id="s1Res"></dl>
+        <p class="note">The generator is set from the paper’s means and s.d.; the bursts are then detected with the paper’s R(t) &gt; 100 Hz rule and measured. With only ten neurons, sample means vary from draw to draw; press New neurons to see the spread.</p>
+      </div>
+    </div>
+    <div class="exp-plots">
+      <figure><canvas id="s1Spec" class="spec"></canvas><figcaption><span class="cap-title">Synthetic motif · spectrogram 0–10 kHz</span><span id="s1Syl"></span></figcaption></figure>
+      <figure><canvas id="s1Ras" class="tall"></canvas><figcaption><span class="cap-title">Spike rasters aligned to the motif</span><span class="key dot" style="--c:var(--hvc)">HVC(RA)</span><span class="key dot" style="--c:var(--hvx)">HVC(X)</span><span class="key dot" style="--c:var(--int)">HVC interneuron</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="exp" id="clock" aria-labelledby="s2t">
+    <div class="exp-text">
+      <span class="eyebrow">Discussion · a code for time</span>
+      <h2 id="s2t">Sort the neurons and a clock appears</h2>
+      <p>Different HVC(RA) neurons burst at different times, “with no obvious timing relation to the onset or offset of song syllables”. Ordered by burst time, the population tiles the motif. At every moment a different small group is active: a code for time in the song, not for syllables.</p>
+      <div class="controls">
+        <div class="field"><label for="s2N">HVC(RA) neurons <output id="s2NOut"></output></label><input type="range" id="s2N" min="10" max="600" step="10" value="200"></div>
+        <label class="check"><input type="checkbox" id="s2Sort" checked> Sort by burst time</label>
+      </div>
+      <div class="result">
+        <h3>Computed</h3>
+        <dl class="cmp" id="s2Res"></dl>
+      </div>
+    </div>
+    <div class="exp-plots">
+      <figure><canvas id="s2Spec" class="spec"></canvas><figcaption><span class="cap-title">Motif</span></figcaption></figure>
+      <figure><canvas id="s2Ras" class="tall"></canvas><figcaption><span class="cap-title">One rendition, one row per neuron</span><span class="key dot" style="--c:var(--hvc)">burst</span><span class="key" style="--c:var(--line)">syllable boundaries</span></figcaption></figure>
+      <figure><canvas id="s2Cov" class="short"></canvas><figcaption><span class="cap-title">Fraction of the motif covered by at least one burst</span><span class="key" style="--c:var(--accent)">1 − exp(−N·d/T)</span><span class="key dot" style="--c:var(--ink)">this population</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="exp" id="score" aria-labelledby="s3t">
+    <div class="exp-text">
+      <span class="eyebrow">Discussion · the score is in the synapses <span class="tag-ill">illustration</span></span>
+      <h2 id="s3t">A sparse clock makes learning local</h2>
+      <p>The paper proposes that the canonical sequence in HVC “is translated into a complex sequence in RA by a set of synaptic weights”. Here each RA neuron sums delayed, weighted HVC(RA) bursts. Click the RA trace to correct an “error” at that moment by weakening the synapses active just before it. With the sparse code only that moment changes. With a dense code, where every HVC neuron bursts many times, the same correction spreads across the song.</p>
+      <div class="controls">
+        <div class="field"><label for="s3Code">HVC code</label>
+          <select id="s3Code"><option value="sparse">Sparse: one burst per neuron (as recorded)</option><option value="dense">Dense: 12 bursts per neuron (counterfactual)</option></select>
+        </div>
+        <div class="field"><label for="s3Err">Error to correct at <output id="s3ErrOut"></output></label><input type="range" id="s3Err" min="40" max="880" step="1" value="450"></div>
+        <div class="playrow"><button type="button" id="s3Reset">Clear the correction</button></div>
+      </div>
+      <div class="result">
+        <h3>Effect of one local correction</h3>
+        <dl class="cmp" id="s3Res"></dl>
+      </div>
+    </div>
+    <div class="exp-plots">
+      <figure><canvas id="s3Hvc" class="short"></canvas><figcaption><span class="cap-title">HVC(RA) bursts (sorted) · highlighted: synapses weakened</span></figcaption></figure>
+      <figure><canvas id="s3Ra" class="tall"></canvas><figcaption><span class="cap-title">Three RA neurons, instantaneous firing rate R(t) (click to place the correction)</span><span class="key" style="--c:var(--muted)">before</span><span class="key" style="--c:var(--ink)">after</span><span class="key" style="--c:var(--hvc)">changed</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="exp" id="sleep" aria-labelledby="s4t">
+    <div class="exp-text">
+      <span class="eyebrow">Fig. 3 · sleeping bird</span>
+      <h2 id="s4t">During sleep, HVC still drives RA</h2>
+      <p>In the head-fixed sleeping bird, HVC(RA) neurons still burst sparsely and RA neurons fire bursts locked to them, before and after. The paper quantifies this with a conditional correlation K(τ) and a shuffle test, both implemented here exactly as in its Methods. Lidocaine in HVC abolished RA sleep bursts, leaving RA’s 10–20 Hz regular spiking.</p>
+      <div class="controls">
+        <div class="field"><label for="s4Dur">Recording length <output id="s4DurOut"></output></label><input type="range" id="s4Dur" min="120" max="900" step="30" value="300"></div>
+        <label class="check"><input type="checkbox" id="s4Lido"> Inject lidocaine into HVC</label>
+        <div class="playrow"><button type="button" class="primary" id="s4Run">Run the shuffle test</button><button type="button" id="s4New">New recording</button><span class="progress" id="s4Prog"></span></div>
+      </div>
+      <div class="result">
+        <h3>Comparison with the paper</h3>
+        <dl class="cmp" id="s4Res"></dl>
+      </div>
+    </div>
+    <div class="exp-plots">
+      <figure><canvas id="s4Tr" class="tiny"></canvas><figcaption><span class="cap-title">20 s of the paired recording</span><span class="key dot" style="--c:var(--hvc)">HVC(RA)</span><span class="key dot" style="--c:var(--ink)">RA</span></figcaption></figure>
+      <figure><canvas id="s4Al" class="short"></canvas><figcaption><span class="cap-title">RA spikes aligned on each HVC(RA) burst (±400 ms)</span></figcaption></figure>
+      <figure><canvas id="s4K"></canvas><figcaption><span class="cap-title">Conditional correlation K(τ), Δt = 5 ms</span><span class="key" style="--c:var(--ink)">K(τ)</span><span class="key dash" style="--c:var(--muted)">95% level (shuffles)</span><span class="key dot" style="--c:var(--ok)">largest significant peak</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- Synthesis -->
+  <section class="whole" id="whole" aria-labelledby="wTitle">
+    <header>
+      <span class="eyebrow">Putting it together</span>
+      <h2 id="wTitle">A time code in HVC plays a score written in RA</h2>
+      <p class="lede" style="max-width:70ch;color:var(--muted)">“The motor actions underlying song unfold when the ‘time code’ in HVC acts on the ‘muscle map’ in RA.” Here are all the pieces running together: the song, the HVC clock, and RA reading it out.</p>
+    </header>
+    <ol class="chain" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+      <li><span class="stepn">CLOCK · HVC(RA)</span><b>One moment each</b><p>Each neuron bursts once per motif (6.1 ms, 4.5 spikes, 0.66 ms jitter). Together they mark every moment of the song.</p><a href="#clock">See the clock ↑</a></li>
+      <li><span class="stepn">SCORE · HVC→RA SYNAPSES</span><b>Weights hold the song</b><p>Which RA neurons fire at each moment depends on the synapses from the HVC neurons active then.</p><a href="#score">See the readout ↑</a></li>
+      <li><span class="stepn">MUSCLE MAP · RA</span><b>Many bursts each</b><p>RA neurons burst about 13 times as often as HVC(RA) neurons and project to vocal and respiratory motor neurons.</p><a href="#sleep">See RA ↑</a></li>
+      <li><span class="stepn">CAUSALITY · SLEEP</span><b>HVC drives RA</b><p>RA bursts follow interneuron bursts by about 4.5 ms and vanish when HVC is silenced. About 70% of RA sleep bursts are HVC-driven.</p><a href="#sleep">See sleep ↑</a></li>
+    </ol>
+
+    <h3>The whole circuit, one motif</h3>
+    <div class="anatomy">
+      <div class="stack">
+        <canvas id="wSpec" style="height:120px" aria-label="Song spectrogram"></canvas>
+        <canvas id="wHvc" style="height:200px" aria-label="HVC(RA) population raster"></canvas>
+        <canvas id="wRa" style="height:200px" aria-label="RA firing rates"></canvas>
+        <div class="scrub">
+          <button type="button" class="primary" id="wPlay">Play</button>
+          <input type="range" id="wT" min="0" max="1000" step="1" value="500" aria-label="Time in motif">
+          <output id="wTOut"></output>
+        </div>
+      </div>
+      <div class="narr" aria-live="polite">
+        <span class="when" id="wWhen"></span>
+        <h3 id="wHead"></h3>
+        <p id="wText"></p>
+        <div class="live" id="wLive"></div>
+      </div>
+    </div>
+
+    <div class="fitpred">
+      <div>
+        <h3 style="margin-bottom:8px">Measured in the paper</h3>
+        <ul>
+          <li>HVC(RA): at most one burst per motif; silent in awake, non-singing birds (&lt; 0.001 spikes/s)</li>
+          <li>Bursts of 6.1 ± 2 ms, 4.5 ± 2 spikes, 613 ± 210 s⁻¹, jitter 0.66 ± 0.14 ms</li>
+          <li>Sleep: 0.06 ± 0.05 bursts/s; RA bursts 13 ± 3 times more often</li>
+          <li>RA–HVC(RA) peak K = 0.62; peaks within ±400 ms</li>
+          <li>Lidocaine in HVC abolishes RA sleep bursts; about 70% feed-forward contribution</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="margin-bottom:8px">Proposed, then tested later</h3>
+        <ul>
+          <li>HVC(RA) bursts form an explicit representation of time</li>
+          <li>The song’s “score” lies in HVC(RA)→RA synapses, a likely site of learning</li>
+          <li>Sparse coding avoids temporal interference, so errors can be fixed at one moment</li>
+          <li>How the sequence propagates within HVC was left open here. Later work tested a chain mechanism (Long &amp; Fee 2008; Long, Jin &amp; Fee 2010).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Methods -->
+  <section class="methods" aria-labelledby="mTitle">
+    <span class="eyebrow">Methods</span>
+    <h2 id="mTitle">Equations, numbers and assumptions</h2>
+    <div class="mgrid">
+      <div style="display:grid;gap:12px;min-width:0">
+        <h3>Analysis (paper’s Methods)</h3>
+        <div class="eqs">
+          <div class="eq"><i>R</i>(<i>t</i>) = 1 / (<i>t</i><sub><i>i</i>+1</sub> − <i>t</i><sub><i>i</i></sub>),&nbsp;&nbsp;<i>t</i><sub><i>i</i></sub> &lt; <i>t</i> ≤ <i>t</i><sub><i>i</i>+1</sub><span class="no">instantaneous rate</span></div>
+          <div class="eq">burst: interval where <i>R</i>(<i>t</i>) &gt; 100 Hz<span class="no">burst criterion</span></div>
+          <div class="eq"><i>c</i>(τ) = (1/<i>N</i><sub>A</sub>) Σ<sub><i>i</i></sub> Θ[Δ<i>t</i> − min<sub><i>j</i></sub> |<i>t</i><sub>A<i>i</i></sub> − <i>t</i><sub>B<i>j</i></sub> − τ|]<span class="no">conditional spike probability</span></div>
+          <div class="eq"><i>K</i>(τ) = (<i>c</i>(τ) − <i>c̄</i>) / (1 − <i>c̄</i>),&nbsp;&nbsp;<i>c̄</i> ≤ 0.5<span class="no">conditional correlation</span></div>
+          <div class="eq">Δ<i>t</i> = 5 ms;&nbsp; τ ∈ [−1, 1] s;&nbsp; A = train with fewer spikes</div>
+          <div class="eq">shuffle: 500 ms windows, cyclic shift ∈ [0, 500) ms, 300 shuffles, 95% of peak values</div>
+          <div class="eq">feed-forward fraction ≈ K<sub>RA–HVC(i)</sub> / K<sub>HVC(RA)–HVC(i)</sub> = 0.51 / 0.73</div>
+        </div>
+        <p class="note">Θ is the Heaviside step. τ &gt; 0 means the RA neuron follows the HVC(RA) neuron. c̄ is the mean of c(τ) over shuffled trains.</p>
+      </div>
+      <div style="display:grid;gap:12px;min-width:0">
+        <h3>Numbers from the paper used to generate spikes</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Quantity</th><th>Value</th><th>State</th></tr></thead>
+            <tbody>
+              <tr><td>HVC(RA) bursts per motif</td><td class="num">≤ 1</td><td>singing</td></tr>
+              <tr><td>HVC(RA) burst duration</td><td class="num">6.1 ± 2 ms</td><td>singing</td></tr>
+              <tr><td>Spikes per burst</td><td class="num">4.5 ± 2</td><td>singing</td></tr>
+              <tr><td>Intraburst rate</td><td class="num">613 ± 210 s⁻¹</td><td>singing</td></tr>
+              <tr><td>Burst jitter (r.m.s.)</td><td class="num">0.66 ± 0.14 ms</td><td>singing</td></tr>
+              <tr><td>HVC(X) bursts per motif</td><td class="num">0–5</td><td>singing</td></tr>
+              <tr><td>Interneuron spontaneous rate</td><td class="num">11 ± 7 s⁻¹</td><td>awake, not singing</td></tr>
+              <tr><td>HVC(RA) burst rate</td><td class="num">0.06 ± 0.05 s⁻¹</td><td>sleep</td></tr>
+              <tr><td>RA : HVC(RA) burst ratio</td><td class="num">13 ± 3</td><td>sleep</td></tr>
+              <tr><td>HVC(RA) sleep burst</td><td class="num">6.5 ± 1.8 ms · 3.2 ± 0.8 spikes · 347 ± 81 s⁻¹</td><td>sleep</td></tr>
+              <tr><td>RA sleep burst duration</td><td class="num">11.5 ± 3.5 ms</td><td>sleep</td></tr>
+              <tr><td>RA regular spiking</td><td class="num">10–20 Hz</td><td>sleep</td></tr>
+              <tr><td>Motif length</td><td class="num">about 1 s</td><td>(synthetic: 0.9 s)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="display:grid;gap:12px;min-width:0">
+        <h3>Assumptions made here</h3>
+        <ul class="mlist">
+          <li><b>Song</b>: a synthetic 0.9 s motif of eight syllables (harmonic stacks, sweeps, noisy notes) at 22.05 kHz. It is a stand-in, not a recording.</li>
+          <li><b>HVC(RA) generator</b>: burst time uniform over the motif. Spikes per burst ~ N(4.5, 2), clipped to 2–10, and burst duration ~ N(6.1, 2) ms; the intraburst rate is not set directly but follows from these two, and is measured. Burst onset jitter ~ N(0, σ). In sleep: N(3.2, 0.8) spikes over N(6.5, 1.8) ms.</li>
+          <li><b>Interneurons during song</b>: an inhomogeneous Poisson process of 60–260 s⁻¹. The paper reports only “high rates of spiking and bursting”.</li>
+          <li><b>HVC→RA readout</b>: 600 HVC(RA) neurons, 25% connectivity, exponential weights, a 3.5 ms delay (the mean antidromic latency) and a 5 ms exponential synaptic kernel. Each RA threshold is set to give about 13 bursts per motif.</li>
+          <li><b>Sleep</b>: replay events at 0.14 s⁻¹, each replaying a random 0.2–0.7 s stretch of the motif. Within a replay, the HVC(RA) burst occurs with probability 0.85 and each RA sequence burst with probability 0.6, both with 2 ms jitter. RA has 18 sequence times per motif on top of 15 Hz regular spiking. These values were chosen so that the burst rate, the RA : HVC(RA) ratio and the peak correlation land near the paper’s averages. They are fitted, not predicted.</li>
+        </ul>
+      </div>
+      <div style="display:grid;gap:12px;min-width:0">
+        <h3>What this leaves out</h3>
+        <ul class="mlist">
+          <li>No spiking mechanism inside HVC: the clock is imposed, not generated. Option (b) of this series would add a chain model.</li>
+          <li>No syrinx or respiratory model: RA activity is not turned into sound.</li>
+          <li>Calls, repeated syllables and HVC(RA) neurons silent during song (3 in the paper) are not simulated.</li>
+          <li>The HVC(RA) neurons’ burst times in the sleep model are fixed by construction, so the shuffle test checks the analysis, not the biology.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Hahnloser RHR, Kozhevnikov AA, Fee MS (2002) An ultra-sparse code underlies the generation of neural sequences in a songbird. <i>Nature</i> 419:65–70 · <a href="https://doi.org/10.1038/nature00974" target="_blank" rel="noopener">doi:10.1038/nature00974</a></p>
+    <p>Further reading, not used for numbers here: Long MA, Fee MS (2008) <i>Nature</i> 456:189–194 · Long MA, Jin DZ, Fee MS (2010) <i>Nature</i> 468:394–399.</p>
+    <p>Every number on this page is computed in your browser. The song is synthetic.</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const MOT = 900;                // motif length (ms), synthetic
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------------- random ----------------
+  function rngOf(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  const gaussOf = r => () => { let u = 0; while (!u) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
+  const clip = (x, a, b) => Math.max(a, Math.min(b, x));
+  const mean = a => a.reduce((s, x) => s + x, 0) / Math.max(1, a.length);
+  const sd = a => { const m = mean(a); return Math.sqrt(mean(a.map(x => (x - m) ** 2))); };
+
+  // ---------------- synthetic song ----------------
+  const SR = 22050;
+  const SYL = [
+    { n: "A", t0: 0, t1: 70, type: "stack", f: [680, 620] },
+    { n: "B", t0: 100, t1: 160, type: "sweep", f: [5600, 2100] },
+    { n: "C", t0: 185, t1: 275, type: "noise", f: [2200, 7000] },
+    { n: "D", t0: 305, t1: 390, type: "fm", f: [560, 820, 600] },
+    { n: "E", t0: 415, t1: 470, type: "tone", f: [3700, 4300] },
+    { n: "F", t0: 500, t1: 620, type: "buzz", f: [520, 480] },
+    { n: "G", t0: 655, t1: 720, type: "clicks" },
+    { n: "H", t0: 760, t1: 890, type: "stack", f: [720, 560] }
+  ];
+  const SYLDESC = { A: "a harmonic stack", B: "a downsweep", C: "a noisy note", D: "a frequency-modulated stack", E: "a high whistle", F: "a buzzy stack", G: "two clicks", H: "a long harmonic stack" };
+  const SONG = (() => {
+    const r = rngOf(11), N = Math.round(SR * MOT / 1000), x = new Float32Array(N);
+    const env = (t, a, b) => { const u = Math.min(t - a, b - t); return u <= 0 ? 0 : u >= 6 ? 1 : 0.5 - 0.5 * Math.cos(Math.PI * u / 6); };
+    // biquad band-pass for noise syllables
+    function bp(sig, f, q) { const w = 2 * Math.PI * f / SR, al = Math.sin(w) / (2 * q), b0 = al, b2 = -al, a0 = 1 + al, a1 = -2 * Math.cos(w), a2 = 1 - al; let x1 = 0, x2 = 0, y1 = 0, y2 = 0; return sig.map(v => { const y = (b0 * v + b2 * x2 - a1 * y1 - a2 * y2) / a0; x2 = x1; x1 = v; y2 = y1; y1 = y; return y; }); }
+    for (const s of SYL) {
+      const i0 = Math.round(s.t0 * SR / 1000), i1 = Math.round(s.t1 * SR / 1000), L = i1 - i0;
+      let ph = 0; const noise = Array.from({ length: L }, () => r() * 2 - 1);
+      const nb = s.type === "noise" ? bp(bp(noise, (s.f[0] + s.f[1]) / 2, 0.9), (s.f[0] + s.f[1]) / 2, 0.9) : s.type === "buzz" ? bp(noise, 3000, 0.7) : null;
+      for (let k = 0; k < L; k++) {
+        const tm = s.t0 + k * 1000 / SR, u = k / L, e = env(tm, s.t0, s.t1);
+        let v = 0;
+        if (s.type === "stack" || s.type === "fm" || s.type === "buzz") {
+          const f0 = s.type === "fm" ? (u < 0.5 ? s.f[0] + (s.f[1] - s.f[0]) * u * 2 : s.f[1] + (s.f[2] - s.f[1]) * (u - 0.5) * 2) : s.f[0] + (s.f[1] - s.f[0]) * u;
+          ph += 2 * Math.PI * f0 / SR;
+          for (let h = 1; h <= 14; h++) { const fh = h * f0; if (fh > 10000) break; v += Math.exp(-(((fh - 3200) / 2300) ** 2)) * Math.sin(h * ph) * 0.35; }
+          if (s.type === "buzz") v = v * (0.6 + 0.4 * Math.sin(ph)) + nb[k] * 2.2;
+        } else if (s.type === "sweep" || s.type === "tone") {
+          const f = s.f[0] * Math.pow(s.f[1] / s.f[0], u); ph += 2 * Math.PI * f / SR;
+          v = Math.sin(ph) + 0.3 * Math.sin(2 * ph);
+        } else if (s.type === "noise") {
+          v = nb[k] * 3 * (0.65 + 0.35 * Math.sin(2 * Math.PI * 35 * tm / 1000));
+        } else if (s.type === "clicks") {
+          for (const c0 of [s.t0, s.t0 + 35]) { const lt = tm - c0; if (lt >= 0 && lt < 28) { const f = 7000 * Math.pow(2000 / 7000, lt / 28); v += Math.sin(2 * Math.PI * f * lt / 1000) * Math.sin(Math.PI * lt / 28); } }
+        }
+        x[i0 + k] += v * e;
+      }
+    }
+    let pk = 0; for (const v of x) pk = Math.max(pk, Math.abs(v)); for (let i = 0; i < N; i++) x[i] = x[i] / pk * 0.8 + (r() - 0.5) * 0.004;
+    return x;
+  })();
+  // STFT
+  const SPEC = (() => {
+    const NF = 256, HOP = 64, frames = Math.floor((SONG.length - NF) / HOP) + 1, bins = Math.floor(10000 / (SR / NF));
+    const win = Array.from({ length: NF }, (_, i) => 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (NF - 1)));
+    const out = new Float32Array(frames * bins); let mx = -1e9;
+    const re = new Float64Array(NF), im = new Float64Array(NF);
+    for (let f = 0; f < frames; f++) {
+      for (let i = 0; i < NF; i++) { re[i] = SONG[f * HOP + i] * win[i]; im[i] = 0; }
+      fft(re, im);
+      for (let b = 0; b < bins; b++) { const db = 10 * Math.log10(re[b] ** 2 + im[b] ** 2 + 1e-12); out[f * bins + b] = db; if (db > mx) mx = db; }
+    }
+    for (let i = 0; i < out.length; i++) out[i] = clip((out[i] - mx + 55) / 55, 0, 1);
+    return { frames, bins, data: out, hopMs: HOP * 1000 / SR, nfMs: NF * 1000 / SR };
+  })();
+  function fft(re, im) {
+    const n = re.length;
+    for (let i = 1, j = 0; i < n; i++) { let bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit; if (i < j) { [re[i], re[j]] = [re[j], re[i]];[im[i], im[j]] = [im[j], im[i]]; } }
+    for (let len = 2; len <= n; len <<= 1) { const a = -2 * Math.PI / len, wr = Math.cos(a), wi = Math.sin(a); for (let i = 0; i < n; i += len) { let cr = 1, ci = 0; for (let k = 0; k < len / 2; k++) { const ur = re[i + k], ui = im[i + k], vr = re[i + k + len / 2] * cr - im[i + k + len / 2] * ci, vi = re[i + k + len / 2] * ci + im[i + k + len / 2] * cr; re[i + k] = ur + vr; im[i + k] = ui + vi; re[i + k + len / 2] = ur - vr; im[i + k + len / 2] = ui - vi; const t = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = t; } } }
+  }
+  let specImg = null;
+  function buildSpecImg() {
+    const c = document.createElement("canvas"); c.width = SPEC.frames; c.height = SPEC.bins;
+    const g = c.getContext("2d"), d = g.createImageData(SPEC.frames, SPEC.bins);
+    const hex = h => { const m = h.replace("#", ""); return [0, 2, 4].map(i => parseInt(m.slice(i, i + 2), 16)); };
+    const bg = hex(tok("--paper")), fg = hex(tok("--spec"));
+    for (let f = 0; f < SPEC.frames; f++) for (let b = 0; b < SPEC.bins; b++) {
+      const v = Math.pow(SPEC.data[f * SPEC.bins + b], 1.6), o = ((SPEC.bins - 1 - b) * SPEC.frames + f) * 4;
+      for (let k = 0; k < 3; k++) d.data[o + k] = Math.round(bg[k] + (fg[k] - bg[k]) * v);
+      d.data[o + 3] = 255;
+    }
+    g.putImageData(d, 0, 0); specImg = c;
+  }
+
+  // ---------------- canvas helpers ----------------
+  function setup(cv) {
+    const dpr = Math.min(2, window.devicePixelRatio || 1), W = cv.clientWidth, H = cv.clientHeight;
+    if (!W || !H) return null;
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    return { g, W, H };
+  }
+  const ML = 50, MR = 10;
+  function drawSpec(cv, opts = {}) {
+    const s = setup(cv); if (!s) return; const { g, W, H } = s, top = 4, bot = opts.axis ? 22 : 6;
+    const X = t => ML + t / MOT * (W - ML - MR);
+    if (!specImg) buildSpecImg();
+    g.imageSmoothingEnabled = true;
+    const tEnd = (SPEC.frames - 1) * SPEC.hopMs + SPEC.nfMs / 2;
+    g.drawImage(specImg, X(SPEC.nfMs / 2), top, X(tEnd) - X(SPEC.nfMs / 2), H - top - bot);
+    g.strokeStyle = tok("--line"); g.lineWidth = 1; g.strokeRect(ML + .5, top + .5, W - ML - MR - 1, H - top - bot - 1);
+    g.font = `11px ${tok("--mono")}`; g.fillStyle = tok("--muted"); g.textAlign = "right"; g.textBaseline = "middle";
+    g.fillText("10k", ML - 6, top + 6); g.fillText("0 Hz", ML - 6, H - bot - 6);
+    g.textAlign = "center"; g.textBaseline = "top";
+    for (const sy of SYL) { const a = opts.hl && opts.hl === sy.n; g.fillStyle = a ? tok("--accent") : tok("--muted"); g.font = `${a ? 600 : 400} 11px ${tok("--mono")}`; g.fillText(sy.n, X((sy.t0 + sy.t1) / 2), top + 2); }
+    if (opts.axis) { g.font = `11px ${tok("--mono")}`; g.fillStyle = tok("--muted"); for (let t = 0; t <= MOT; t += 100) g.fillText(t + "", X(t), H - bot + 5); }
+    if (opts.cursor != null) { g.strokeStyle = tok("--accent"); g.lineWidth = 2; g.beginPath(); g.moveTo(X(opts.cursor), top); g.lineTo(X(opts.cursor), H - bot); g.stroke(); }
+  }
+  // rows: [{spikes:[ms], color, label?, sep?}]
+  function drawRaster(cv, rows, opts = {}) {
+    const s = setup(cv); if (!s) return; const { g, W, H } = s, top = 6, bot = 24;
+    const t0 = opts.t0 ?? 0, t1 = opts.t1 ?? MOT;
+    const X = t => ML + (t - t0) / (t1 - t0) * (W - ML - MR);
+    const n = rows.length, rh = (H - top - bot) / Math.max(1, n);
+    if (opts.syl) { g.fillStyle = tok("--grid"); for (const sy of SYL) g.fillRect(X(sy.t0), top, X(sy.t1) - X(sy.t0), H - top - bot); }
+    if (opts.bands) for (const b of opts.bands) { g.fillStyle = b.color; g.globalAlpha = b.alpha ?? 0.15; g.fillRect(X(b.x0), top, X(b.x1) - X(b.x0), H - top - bot); g.globalAlpha = 1; }
+    rows.forEach((r, i) => {
+      const y = top + i * rh;
+      if (r.sep) { g.strokeStyle = tok("--line"); g.lineWidth = 1; g.beginPath(); g.moveTo(ML, y + .5); g.lineTo(W - MR, y + .5); g.stroke(); }
+      if (r.label) { g.font = `10.5px ${tok("--mono")}`; g.fillStyle = r.color; g.textAlign = "right"; g.textBaseline = "middle"; g.fillText(r.label, ML - 6, y + (r.labelSpan || 1) * rh / 2); }
+      g.strokeStyle = r.color; g.globalAlpha = r.alpha ?? 1; g.lineWidth = opts.tickW || 1.2;
+      const hgt = Math.max(1, rh * (opts.fill ?? 0.8));
+      g.beginPath();
+      for (const t of r.spikes) { if (t < t0 || t > t1) continue; const x = Math.round(X(t)) + .5; g.moveTo(x, y + (rh - hgt) / 2); g.lineTo(x, y + (rh + hgt) / 2); }
+      g.stroke(); g.globalAlpha = 1;
+      if (r.blocks) { g.fillStyle = r.color; g.globalAlpha = r.alpha ?? 1; for (const b of r.blocks) g.fillRect(X(b[0]), y + (rh - hgt) / 2, Math.max(1.5, X(b[1]) - X(b[0])), hgt); g.globalAlpha = 1; }
+    });
+    g.strokeStyle = tok("--line"); g.lineWidth = 1; g.strokeRect(ML + .5, top + .5, W - ML - MR - 1, H - top - bot - 1);
+    g.font = `11px ${tok("--mono")}`; g.fillStyle = tok("--muted"); g.textAlign = "center"; g.textBaseline = "top";
+    const st = opts.xstep || 100;
+    for (let t = Math.ceil(t0 / st) * st; t <= t1; t += st) g.fillText(String(t).replace("-", "−"), X(t), H - bot + 5);
+    g.textAlign = "right"; g.fillText(opts.xlabel || "ms", W - MR, H - 11);
+    if (opts.cursor != null) { g.strokeStyle = tok("--accent"); g.lineWidth = 2; g.beginPath(); g.moveTo(X(opts.cursor), top); g.lineTo(X(opts.cursor), H - bot); g.stroke(); }
+    return { X, rh, top };
+  }
+  function niceStep(r, n) { const raw = r / n, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p; }
+  function fmtTick(v, step) { const d = step < 0.01 ? 3 : step < 0.1 ? 2 : step < 1 ? 1 : 0; const s = Math.abs(v) < 1e-9 ? "0" : v.toFixed(d); return s.replace("-", "−"); }
+  function plot(cv, o) {
+    const s = setup(cv); if (!s) return; const { g, W, H } = s;
+    const M = { l: ML, r: MR, t: 8, b: 30 }, [x0, x1] = o.x, [y0, y1] = o.y;
+    const X = x => M.l + (x - x0) / (x1 - x0) * (W - M.l - M.r), Y = y => H - M.b - (y - y0) / (y1 - y0) * (H - M.t - M.b);
+    const mono = tok("--mono"); g.font = `11px ${mono}`; g.lineWidth = 1;
+    const xs = o.xstep || niceStep(x1 - x0, Math.max(3, Math.floor((W - M.l) / 80))), ys = o.ystep || niceStep(y1 - y0, 4);
+    g.textAlign = "center"; g.textBaseline = "top";
+    for (let v = Math.ceil(x0 / xs) * xs; v <= x1 + 1e-9; v += xs) { g.strokeStyle = tok("--grid"); g.beginPath(); g.moveTo(X(v) + .5, M.t); g.lineTo(X(v) + .5, H - M.b); g.stroke(); g.fillStyle = tok("--muted"); g.fillText(fmtTick(v, xs), X(v), H - M.b + 5); }
+    g.textAlign = "right"; g.textBaseline = "middle";
+    for (let v = Math.ceil(y0 / ys) * ys; v <= y1 + 1e-9; v += ys) { g.strokeStyle = Math.abs(v) < 1e-9 ? tok("--line") : tok("--grid"); g.beginPath(); g.moveTo(M.l, Y(v) + .5); g.lineTo(W - M.r, Y(v) + .5); g.stroke(); g.fillStyle = tok("--muted"); g.fillText(fmtTick(v, ys), M.l - 6, Y(v)); }
+    g.strokeStyle = tok("--line"); g.strokeRect(M.l + .5, M.t + .5, W - M.l - M.r - 1, H - M.t - M.b - 1);
+    g.fillStyle = tok("--muted"); g.textAlign = "right"; g.textBaseline = "bottom"; g.fillText(o.xlabel || "", W - M.r, H - 1);
+    g.textAlign = "left"; g.textBaseline = "top"; g.fillText(o.ylabel || "", M.l + 6, M.t + 4);
+    g.save(); g.beginPath(); g.rect(M.l, M.t, W - M.l - M.r, H - M.t - M.b); g.clip();
+    for (const b of o.bands || []) { g.fillStyle = b.color; g.globalAlpha = b.alpha ?? .15; g.fillRect(X(b.x0), M.t, X(b.x1) - X(b.x0), H - M.t - M.b); g.globalAlpha = 1; }
+    for (const h of o.hlines || []) { g.strokeStyle = h.color; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(M.l, Y(h.y) + .5); g.lineTo(W - M.r, Y(h.y) + .5); g.stroke(); g.setLineDash([]); }
+    for (const s2 of o.series || []) {
+      g.strokeStyle = s2.color; g.fillStyle = s2.color; g.globalAlpha = s2.alpha ?? 1; g.lineWidth = s2.w || 1.6; g.setLineDash(s2.dash ? [5, 4] : []);
+      if (s2.points) { for (let i = 0; i < s2.x.length; i++) { g.beginPath(); g.arc(X(s2.x[i]), Y(s2.y[i]), s2.r || 3.5, 0, 7); g.fill(); } }
+      else { g.beginPath(); g.lineJoin = "round"; let st = false; for (let i = 0; i < s2.x.length; i++) { const v = s2.y[i]; if (v == null || isNaN(v)) { st = false; continue; } const px = X(s2.x[i]), py = Y(v); st ? g.lineTo(px, py) : (g.moveTo(px, py), st = true); } g.stroke(); }
+    }
+    g.setLineDash([]); g.globalAlpha = 1;
+    for (const v of o.vlines || []) { g.strokeStyle = v.color || tok("--muted"); g.lineWidth = v.w || 1; g.beginPath(); g.moveTo(X(v.x) + .5, M.t); g.lineTo(X(v.x) + .5, H - M.b); g.stroke(); }
+    g.restore();
+    return { X, Y };
+  }
+
+  // ---------------- paper's analysis (Methods) ----------------
+  // bursts: maximal runs where R(t) = 1/ISI > 100 Hz, i.e. ISI < 10 ms
+  function bursts(sp) {
+    const out = []; let i = 0;
+    while (i < sp.length - 1) {
+      if (sp[i + 1] - sp[i] < 10) { let j = i + 1; while (j < sp.length - 1 && sp[j + 1] - sp[j] < 10) j++; const s = sp.slice(i, j + 1), isis = s.slice(1).map((t, k) => t - s[k]); out.push({ on: s[0], dur: s[s.length - 1] - s[0], n: s.length, rate: mean(isis.map(d => 1000 / d)) }); i = j + 1; }
+      else i++;
+    }
+    return out;
+  }
+  // instantaneous rate R(t) on a grid
+  function instRate(sp, t0, t1, dt) {
+    const n = Math.round((t1 - t0) / dt) + 1, R = new Float32Array(n); let k = 0;
+    for (let i = 0; i < n; i++) { const t = t0 + i * dt; while (k < sp.length - 1 && sp[k + 1] < t) k++; R[i] = (k < sp.length - 1 && sp[k] < t && t <= sp[k + 1]) ? 1000 / (sp[k + 1] - sp[k]) : 0; }
+    return R;
+  }
+
+  // ---------------- generators ----------------
+  // spike count and burst duration are drawn from the paper's mean ± s.d.; the intraburst rate follows from them
+  function burstTemplate(G, nMean, nSd, dMean, dSd) {
+    const n = clip(Math.round(nMean + nSd * G()), 2, 10), dur = clip(dMean + dSd * G(), 0.95 * (n - 1), 9 * (n - 1));
+    const raw = Array.from({ length: n - 1 }, () => 1 + 0.12 * G()), sc = dur / raw.reduce((a, b) => a + b, 0);
+    return raw.map(v => clip(v * sc, 0.9, 9.5));
+  }
+  const at = (on, isis, G, noise = 0.05) => { const s = [on]; let t = on; for (const d of isis) { t += d; s.push(t + noise * G()); } return s; };
+
+  // ---------------- 1. singing raster ----------------
+  let s1Seed = 3, s1 = null, songPlay = null;
+  const s1Jit = $("s1Jit");
+  function genS1() {
+    const r = rngOf(s1Seed), G = gaussOf(r), jit = +s1Jit.value, R = 10;
+    const ra = Array.from({ length: 10 }, () => { const T = 15 + r() * (MOT - 40), isis = burstTemplate(G, 4.5, 2, 6.1, 2); return { T, trials: Array.from({ length: R }, () => at(T + jit * G(), isis, G)) }; });
+    ra.sort((a, b) => a.T - b.T);
+    const hx = Array.from({ length: 2 }, () => { const nb = Math.floor(r() * 6), bs = Array.from({ length: nb }, () => ({ T: 15 + r() * (MOT - 40), isis: burstTemplate(G, 4.5, 2, 6.1, 2) })); return { nb, trials: Array.from({ length: R }, () => bs.flatMap(b => at(b.T + jit * G(), b.isis, G)).sort((a, b) => a - b)) }; });
+    const ph = [r() * 6, r() * 6, r() * 6];
+    const hi = Array.from({ length: 2 }, (_, q) => ({ trials: Array.from({ length: R }, () => { const sp = []; for (let t = 0; t < MOT; t += 0.1) { const lam = 60 + 200 * (0.5 + 0.25 * Math.sin(t / 37 + ph[q]) + 0.25 * Math.sin(t / 11 + ph[q + 1])); if (r() < lam * 1e-4) sp.push(t); } return sp; }) }));
+    s1 = { ra, hx, hi, R, jit };
+  }
+  function drawS1(cursor) {
+    drawSpec($("s1Spec"), { axis: false, cursor });
+    const rows = [], showX = $("s1X").checked;
+    const push = (trials, color, label) => trials.forEach((sp, k) => rows.push({ spikes: sp, color, sep: k === 0, label: k === 0 ? label : null, labelSpan: trials.length }));
+    s1.ra.forEach((nrn, i) => push(nrn.trials, tok("--hvc"), "RA" + (i + 1)));
+    if (showX) s1.hx.forEach((n, i) => push(n.trials, tok("--hvx"), "X" + (i + 1)));
+    s1.hi.forEach((n, i) => push(n.trials, tok("--int"), "i" + (i + 1)));
+    drawRaster($("s1Ras"), rows, { syl: true, cursor, fill: 0.9 });
+  }
+  function statsS1() {
+    const B = [], jits = [], perMotif = [];
+    for (const nrn of s1.ra) { const ons = []; for (const sp of nrn.trials) { const b = bursts(sp); perMotif.push(b.length); B.push(...b); if (b.length) ons.push(b[0].on); } const m = mean(ons); jits.push(Math.sqrt(mean(ons.map(o => (o - m) ** 2)))); }
+    const xb = s1.hx.map(n => bursts(n.trials[0]).length);
+    const f = (a, d = 1) => mean(a).toFixed(d) + " ± " + sd(a).toFixed(d);
+    $("s1Res").innerHTML = [
+      ["Bursts per motif", "max " + Math.max(...perMotif) + " · mean " + mean(perMotif).toFixed(2), "paper: at most one"],
+      ["Burst duration", f(B.map(b => b.dur)) + " ms", "paper: 6.1 ± 2 ms"],
+      ["Spikes per burst", f(B.map(b => b.n)), "paper: 4.5 ± 2"],
+      ["Intraburst rate", f(B.map(b => b.rate), 0) + " s⁻¹", "paper: 613 ± 210 s⁻¹"],
+      ["Timing jitter (r.m.s.)", f(jits, 2) + " ms", "paper: 0.66 ± 0.14 ms"],
+      ["HVC(X) bursts per motif", xb.join(", "), "paper: 0–5"]
+    ].map(([a, b, c]) => `<dt>${a}</dt><dd>${b}<br><span class="muted">${c}</span></dd>`).join("");
+  }
+  s1Jit.addEventListener("input", () => { $("s1JitOut").textContent = (+s1Jit.value).toFixed(2) + " ms"; genS1(); drawS1(); statsS1(); });
+  $("s1New").addEventListener("click", () => { s1Seed = Math.floor(Math.random() * 1e9); genS1(); drawS1(); statsS1(); });
+  $("s1X").addEventListener("change", () => drawS1());
+  $("s1Syl").textContent = SYL.map(s => s.n).join(" · ") + " · 0.9 s";
+
+  // ---------------- audio ----------------
+  let actx = null, abuf = null;
+  function playSong(onFrame, onEnd) {
+    try {
+      if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); abuf = actx.createBuffer(1, SONG.length, SR); abuf.copyToChannel(SONG, 0); }
+      if (actx.state === "suspended") actx.resume();
+      const src = actx.createBufferSource(); src.buffer = abuf; src.connect(actx.destination);
+      const t0 = actx.currentTime + 0.05; src.start(t0);
+      const step = () => { const t = (actx.currentTime - t0) * 1000; if (t >= MOT) { onEnd(); return; } onFrame(Math.max(0, t)); requestAnimationFrame(step); };
+      requestAnimationFrame(step); return true;
+    } catch (e) { return false; }
+  }
+  $("s1Play").addEventListener("click", () => {
+    const b = $("s1Play"); b.disabled = true;
+    const ok = playSong(t => drawS1(t), () => { drawS1(); b.disabled = false; });
+    if (!ok) { b.disabled = false; b.textContent = "Audio unavailable here"; }
+  });
+
+  // ---------------- 2. population clock ----------------
+  const POP = (() => { const r = rngOf(77), G = gaussOf(r); return Array.from({ length: 600 }, () => { const isis = burstTemplate(G, 4.5, 2, 6.1, 2); const T = r() * (MOT - 10); return { T, d: isis.reduce((a, b) => a + b, 0) }; }); })();
+  const s2N = $("s2N");
+  function drawS2() {
+    const N = +s2N.value; $("s2NOut").textContent = N;
+    let pop = POP.slice(0, N); if ($("s2Sort").checked) pop = pop.slice().sort((a, b) => a.T - b.T);
+    drawSpec($("s2Spec"), {});
+    drawRaster($("s2Ras"), pop.map(p => ({ spikes: [], blocks: [[p.T, p.T + p.d]], color: tok("--hvc") })), { syl: true, fill: 1 });
+    // coverage
+    const res = 0.1, n = Math.round(MOT / res), cov = new Uint8Array(n); let active = 0;
+    for (const p of pop) for (let i = Math.floor(p.T / res); i <= Math.min(n - 1, Math.floor((p.T + p.d) / res)); i++) cov[i] = 1;
+    for (const v of cov) active += v;
+    const dbar = mean(POP.map(p => p.d)), frac = active / n, theo = 1 - Math.exp(-N * dbar / MOT);
+    const xs = [], ys = []; for (let k = 0; k <= 600; k += 5) { xs.push(k); ys.push(1 - Math.exp(-k * dbar / MOT)); }
+    plot($("s2Cov"), { x: [0, 600], y: [0, 1], ystep: 0.25, xlabel: "number of HVC(RA) neurons", series: [{ x: xs, y: ys, color: tok("--accent"), w: 2 }, { x: [N], y: [frac], color: tok("--ink"), points: true, r: 5 }] });
+    const sylMs = SYL.reduce((s, y) => s + y.t1 - y.t0, 0), gapFrac = 1 - sylMs / MOT;
+    const inGap = pop.filter(p => !SYL.some(y => p.T >= y.t0 && p.T < y.t1)).length / N;
+    $("s2Res").innerHTML = [
+      ["Motif covered", (100 * frac).toFixed(1) + "% (expected " + (100 * theo).toFixed(1) + "%)"],
+      ["Bursting at any moment", "about " + (N * dbar / MOT).toFixed(2) + " neurons (N·d̄/T)"],
+      ["Bursts starting in silent gaps", (100 * inGap).toFixed(0) + "%"],
+      ["Gaps as a share of the motif", (100 * gapFrac).toFixed(0) + "%, so burst times ignore syllable boundaries"]
+    ].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
+  }
+  s2N.addEventListener("input", drawS2); $("s2Sort").addEventListener("change", drawS2);
+
+  // ---------------- 3. HVC → RA readout ----------------
+  const NH = 600, DT3 = 0.5, NG = Math.round(MOT / DT3) + 1, DELAY = 3.5, TAU = 5;
+  const NET = (() => {
+    const r = rngOf(2024), G = gaussOf(r);
+    const sparse = POP.slice(0, NH).map(p => [p.T]).map((b, i) => ({ b, i }));
+    sparse.sort((a, c) => a.b[0] - c.b[0]);
+    const order = sparse.map(s => s.i);
+    const sp = order.map(i => [POP[i].T]);
+    const dn = order.map(() => Array.from({ length: 12 }, () => r() * (MOT - 10)).sort((a, b) => a - b));
+    const W = [0, 1, 2].map(() => order.map(() => (r() < 0.25 ? -Math.log(r() + 1e-9) : 0)));
+    return { sp, dn, W };
+  })();
+  function drive(times, w) {
+    const imp = new Float64Array(NG), y = new Float64Array(NG), dec = Math.exp(-DT3 / TAU);
+    times.forEach((bs, i) => { if (!w[i]) return; for (const b of bs) { const k = Math.round((b + DELAY) / DT3); if (k < NG) imp[k] += w[i]; } });
+    let v = 0; for (let k = 0; k < NG; k++) { v = v * dec + imp[k]; y[k] = v; }
+    return y;
+  }
+  function raSpikes(y, th) {
+    const sp = []; let ph = 0;
+    for (let k = 0; k < NG; k++) { const ex = (y[k] - th) / (0.5 * th); const rate = ex > 0 ? 250 + 550 * Math.min(1, ex) : 0; ph += rate * DT3 / 1000; if (ph >= 1) { ph -= 1; sp.push(k * DT3); } if (rate === 0) ph = 0; }
+    return sp;
+  }
+  function thresholdFor(y, target = 13) {
+    let lo = 0, hi = Math.max(...y);
+    for (let it = 0; it < 40; it++) { const m = (lo + hi) / 2; const nb = bursts(raSpikes(y, m)).length; if (nb > target) lo = m; else hi = m; }
+    return hi;
+  }
+  let corr = { t: 450, on: true };
+  const TH = { sparse: null, dense: null };
+  function readout(code, Wm) {
+    const times = code === "sparse" ? NET.sp : NET.dn;
+    if (!TH[code]) TH[code] = [0, 1, 2].map(j => thresholdFor(drive(times, NET.W[j])));
+    return [0, 1, 2].map(j => { const y = drive(times, Wm[j]); const sp = raSpikes(y, TH[code][j]); return { y, sp, R: instRate(sp, 0, MOT, DT3) }; });
+  }
+  function weakened(code, te) {
+    const times = code === "sparse" ? NET.sp : NET.dn, hit = new Set();
+    times.forEach((bs, i) => { if (bs.some(b => b + DELAY >= te - 15 && b + DELAY <= te)) hit.add(i); });
+    return hit;
+  }
+  function drawS3() {
+    const code = $("s3Code").value, te = +$("s3Err").value; corr.t = te;
+    $("s3ErrOut").textContent = corr.on ? te + " ms" : "none";
+    const hit = corr.on ? weakened(code, te) : new Set();
+    const W2 = NET.W.map(row => row.map((w, i) => hit.has(i) ? w * 0.15 : w));
+    const before = readout(code, NET.W), after = readout(code, W2);
+    const times = code === "sparse" ? NET.sp : NET.dn;
+    const rows = times.map((bs, i) => ({ spikes: bs, color: hit.has(i) ? tok("--hvc") : tok("--muted"), alpha: hit.has(i) ? 1 : 0.7 }));
+    drawRaster($("s3Hvc"), rows, { fill: 1, tickW: 2, bands: corr.on ? [{ x0: te - 15 - DELAY, x1: te - DELAY, color: tok("--hvc"), alpha: 0.12 }] : [] });
+    // RA traces stacked: offset 0, 1000, 2000 Hz
+    const xs = Array.from({ length: NG }, (_, k) => k * DT3), series = [], bands = [];
+    let changed = new Uint8Array(NG);
+    [0, 1, 2].forEach(j => {
+      const off = (2 - j) * 1000;
+      series.push({ x: xs, y: Array.from(before[j].R, v => v + off), color: tok("--muted"), w: 1.2, alpha: 0.8 });
+      series.push({ x: xs, y: Array.from(after[j].R, v => v + off), color: tok("--ink"), w: 1.3 });
+      for (let k = 0; k < NG; k++) if (Math.abs(before[j].R[k] - after[j].R[k]) > 20) changed[k] = 1;
+    });
+    let segs = 0, cnt = 0; for (let k = 0; k < NG; k++) { cnt += changed[k]; if (changed[k] && (k === 0 || !changed[k - 1])) { segs++; let e = k; while (e < NG - 1 && changed[e + 1]) e++; bands.push({ x0: k * DT3 - 2, x1: e * DT3 + 2, color: tok("--hvc"), alpha: 0.18 }); } }
+    plot($("s3Ra"), { x: [0, MOT], y: [0, 3000], ystep: 1000, xstep: 100, xlabel: "ms", ylabel: "RA1 · RA2 · RA3 (R(t), offset 1000 s⁻¹)", series, bands, vlines: corr.on ? [{ x: te, color: tok("--hvc"), w: 1.5 }] : [] });
+    const nb = after.map(a => bursts(a.sp).length);
+    const spread = bands.length ? (Math.max(...bands.map(b => b.x1)) - Math.min(...bands.map(b => b.x0))) : 0;
+    $("s3Res").innerHTML = [
+      ["HVC(RA) neurons weakened", hit.size + " of " + NH],
+      ["Motif time where RA changed", (100 * cnt / NG).toFixed(1) + "%"],
+      ["Separate changed stretches", String(segs)],
+      ["Span of the changes", spread.toFixed(0) + " ms"],
+      ["RA bursts per motif", nb.join(" · ") + " (paper ratio RA:HVC(RA) ≈ 13)"]
+    ].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
+    window.__s3 = { pct: 100 * cnt / NG, segs };
+  }
+  $("s3Code").addEventListener("change", drawS3);
+  $("s3Err").addEventListener("input", () => { corr.on = true; drawS3(); });
+  $("s3Reset").addEventListener("click", () => { corr.on = false; drawS3(); });
+  $("s3Ra").addEventListener("click", e => {
+    const rc = e.currentTarget.getBoundingClientRect(), x = e.clientX - rc.left, t = (x - ML) / (rc.width - ML - MR) * MOT;
+    if (t < 20 || t > MOT - 10) return; $("s3Err").value = Math.round(t); corr.on = true; drawS3();
+  });
+
+  // ---------------- 4. sleep ----------------
+  let s4Seed = 5, S4 = null, K4 = null, s4Job = 0;
+  function genSleep(seed, Tsec, lido) {
+    const r = rngOf(seed), G = gaussOf(r), Tms = Tsec * 1000;
+    const Th = 230;                                   // this HVC(RA) neuron's moment in the motif
+    const raTimes = []; while (raTimes.length < 18) { const t = 20 + r() * (MOT - 40); if (raTimes.every(u => Math.abs(u - t) > 30)) raTimes.push(t); } raTimes.sort((a, b) => a - b);
+    const hvc = [], ra = [], hb = []; let t = 0;
+    while (true) {
+      t += -Math.log(r() + 1e-12) / 0.14 * 1000; if (t > Tms - 1000) break;
+      const L = 200 + r() * 500, s = r() * (MOT - L);
+      if (!lido) {
+        if (Th >= s && Th <= s + L && r() < 0.85) { const on = t + (Th - s) + 2 * G(); hb.push(on); hvc.push(...at(on, burstTemplate(G, 3.2, 0.8, 6.5, 1.8), G)); }
+        for (const q of raTimes) if (q >= s && q <= s + L && r() < 0.6) { const on = t + (q - s) + 2 * G(), dur = clip(11.5 + 3.5 * G(), 5, 20), n = Math.max(3, Math.round(dur / 2) + 1); ra.push(...Array.from({ length: n }, (_, k) => on + k * dur / (n - 1) + 0.1 * G())); }
+      }
+      t += L;
+    }
+    // RA regular spiking at 15 Hz (10–20 Hz in the paper)
+    for (let u = r() * 66; u < Tms; u += 1000 / 15 * (1 + 0.1 * G())) ra.push(u);
+    ra.sort((a, b) => a - b); hvc.sort((a, b) => a - b);
+    return { hvc, ra, hb, Tms, Tsec, lido };
+  }
+  const RES = 0.5, LAG = 1000, DTW = 5;
+  function coverOf(sp, Tms) { const n = Math.ceil(Tms / RES) + 1, c = new Uint8Array(n), w = Math.round(DTW / RES); for (const t of sp) { const k = Math.round(t / RES); for (let j = Math.max(0, k - w); j <= Math.min(n - 1, k + w); j++) c[j] = 1; } return c; }
+  function condProb(A, cov, out) { // c(τ) for τ = -LAG..LAG ms, step 1 ms
+    const n = cov.length;
+    for (let li = 0; li <= 2 * LAG; li++) { const tau = li - LAG; let s = 0; for (const t of A) { const k = Math.round((t - tau) / RES); if (k >= 0 && k < n && cov[k]) s++; } out[li] = s / A.length; }
+  }
+  function shuffle(sp, Tms, r) { const out = []; for (let w0 = 0; w0 < Tms; w0 += 500) { const sh = r() * 500, w1 = Math.min(Tms, w0 + 500), len = w1 - w0; for (const t of sp) if (t >= w0 && t < w1) out.push(w0 + ((t - w0 + sh) % len)); } return out.sort((a, b) => a - b); }
+  function peaks(K, min = 0) { const p = []; for (let i = 5; i < K.length - 5; i++) { if (K[i] <= min) continue; let ok = true; for (let j = -5; j <= 5; j++) if (j && K[i + j] > K[i]) { ok = false; break; } if (ok) p.push(i); } return p; }
+  function runK(nShuf) {
+    const job = ++s4Job, S = S4; if (S.lido || S.hvc.length < 3) { K4 = null; drawS4(); return; }
+    const A = S.hvc, cov = coverOf(S.ra, S.Tms), c = new Float64Array(2 * LAG + 1); condProb(A, cov, c);
+    const r = rngOf(S4seedShuf++), cs = [], prog = $("s4Prog"); let k = 0;
+    const tmp = new Float64Array(2 * LAG + 1);
+    function chunk() {
+      if (job !== s4Job) return;
+      const end = Math.min(nShuf, k + 15);
+      for (; k < end; k++) { const As = shuffle(A, S.Tms, r), Bs = shuffle(S.ra, S.Tms, r); condProb(As, coverOf(Bs, S.Tms), tmp); cs.push(Float64Array.from(tmp)); }
+      prog.textContent = k < nShuf ? `shuffles ${k}/${nShuf}` : `${nShuf} shuffles done`;
+      if (k < nShuf) { setTimeout(chunk, 0); return; }
+      let cbar = 0; for (const a of cs) for (const v of a) cbar += v; cbar /= cs.length * (2 * LAG + 1);
+      const toK = a => Array.from(a, v => (v - cbar) / (1 - cbar));
+      const pv = []; for (const a of cs) { const Ks = toK(a); for (const i of peaks(Ks)) pv.push(Ks[i]); }
+      pv.sort((a, b) => a - b); const thr = pv.length ? pv[Math.floor(0.95 * (pv.length - 1))] : 0;
+      const K = toK(c), sig = peaks(K).filter(i => K[i] > thr);
+      let main = null; for (const i of sig) if (main == null || K[i] > K[main]) main = i;
+      K4 = { K, thr, sig, main, cbar, nShuf };
+      drawS4();
+    }
+    chunk();
+  }
+  let S4seedShuf = 99;
+  function drawS4() {
+    const S = S4, Tsec = S.Tsec;
+    // 20 s excerpt around the first HVC(RA) burst
+    let w0 = S.hb.length ? Math.max(0, S.hb[0] - 8000) : 0; if (w0 + 20000 > S.Tms) w0 = Math.max(0, S.Tms - 20000);
+    drawRaster($("s4Tr"), [{ spikes: S.hvc, color: tok("--hvc"), label: "HVC(RA)" }, { spikes: S.ra, color: tok("--ink"), label: "RA" }], { t0: w0, t1: w0 + 20000, xstep: 5000, xlabel: "ms", fill: 0.7 });
+    const rows = S.hb.slice(0, 40).map(b => ({ spikes: S.ra.filter(t => t >= b - 400 && t <= b + 400).map(t => t - b), color: tok("--ink") }));
+    if (rows.length) drawRaster($("s4Al"), rows, { t0: -400, t1: 400, xstep: 200, xlabel: "ms from HVC(RA) burst", fill: 0.85, cursor: 0 });
+    else drawRaster($("s4Al"), [{ spikes: [], color: tok("--ink") }], { t0: -400, t1: 400, xstep: 200, xlabel: "no HVC(RA) bursts (HVC silenced)" });
+    const xs = Array.from({ length: 2 * LAG + 1 }, (_, i) => i - LAG);
+    if (K4) {
+      const pts = K4.sig.filter(i => i !== K4.main);
+      plot($("s4K"), { x: [-1000, 1000], y: [-0.2, 1], ystep: 0.2, xstep: 250, xlabel: "τ (ms), RA after HVC(RA) > 0", series: [
+        { x: xs, y: K4.K, color: tok("--ink"), w: 1.4 },
+        { x: pts.map(i => xs[i]), y: pts.map(i => K4.K[i]), color: tok("--ink"), points: true, r: 3.5 },
+        { x: K4.main != null ? [xs[K4.main]] : [], y: K4.main != null ? [K4.K[K4.main]] : [], color: tok("--ok"), points: true, r: 5.5 }],
+        hlines: [{ y: K4.thr, color: tok("--muted") }] });
+    } else plot($("s4K"), { x: [-1000, 1000], y: [-0.2, 1], ystep: 0.2, xstep: 250, xlabel: S.lido ? "HVC silenced: no HVC(RA) spikes to correlate" : "running shuffle test…", series: [] });
+    const hB = bursts(S.hvc), rB = bursts(S.ra);
+    const tonic = (S.ra.length - rB.reduce((s, b) => s + b.n, 0)) / Tsec;
+    const lags = K4 ? K4.sig.map(i => xs[i]) : [];
+    const rows2 = [
+      ["HVC(RA) burst rate", (hB.length / Tsec).toFixed(3) + " s⁻¹", "paper: 0.06 ± 0.05 s⁻¹"],
+      ["RA : HVC(RA) bursts", S.lido ? "RA bursts: " + rB.length : (rB.length / Math.max(1, hB.length)).toFixed(1), S.lido ? "paper: bursts abolished" : "paper: 13 ± 3"],
+      ["HVC(RA) sleep burst", hB.length ? mean(hB.map(b => b.n)).toFixed(1) + " spikes · " + mean(hB.map(b => b.rate)).toFixed(0) + " s⁻¹" : "–", "paper: 3.2 ± 0.8 · 347 ± 81 s⁻¹"],
+      ["RA regular spiking", tonic.toFixed(1) + " Hz", "paper: 10–20 Hz, unaffected by lidocaine"],
+      ["Largest significant K", K4 && K4.main != null ? K4.K[K4.main].toFixed(2) + " at τ = " + xs[K4.main] + " ms" : "–", "paper: mean 0.62 (n = 45 pairs)"],
+      ["Significant peaks", K4 ? K4.sig.length + (lags.length ? " between " + Math.min(...lags) + " and " + Math.max(...lags) + " ms" : "") : "–", "paper: within ±400 ms, both signs"],
+      ["Feed-forward share", (0.51 / 0.73 * 100).toFixed(0) + "% = 0.51 / 0.73", "paper: 70%"]
+    ];
+    $("s4Res").innerHTML = rows2.map(([a, b, c]) => `<dt>${a}</dt><dd>${b}<br><span class="muted">${c}</span></dd>`).join("");
+  }
+  const s4Dur = $("s4Dur");
+  function newS4(run = true) { S4 = genSleep(s4Seed, +s4Dur.value, $("s4Lido").checked); K4 = null; drawS4(); if (run) runK(300); }
+  s4Dur.addEventListener("input", () => { $("s4DurOut").textContent = s4Dur.value + " s"; });
+  s4Dur.addEventListener("change", () => newS4());
+  $("s4Lido").addEventListener("change", () => newS4());
+  $("s4New").addEventListener("click", () => { s4Seed = Math.floor(Math.random() * 1e9); newS4(); });
+  $("s4Run").addEventListener("click", () => { K4 = null; drawS4(); runK(300); });
+  $("s4DurOut").textContent = s4Dur.value + " s";
+
+  // ---------------- synthesis ----------------
+  const wT = $("wT"); let wPlaying = false;
+  const WR = (() => readout("sparse", NET.W))();
+  function sylAt(t) { return SYL.find(s => t >= s.t0 && t < s.t1) || null; }
+  function drawW() {
+    const t = +wT.value / 1000 * MOT, sy = sylAt(t);
+    $("wTOut").textContent = t.toFixed(0) + " ms";
+    drawSpec($("wSpec"), { cursor: t, hl: sy ? sy.n : null });
+    const act = new Set(); NET.sp.forEach((b, i) => { if (t >= b[0] - 1 && t <= b[0] + 7) act.add(i); });
+    drawRaster($("wHvc"), NET.sp.map((b, i) => ({ spikes: b, color: act.has(i) ? tok("--hvc") : tok("--muted"), alpha: act.has(i) ? 1 : 0.6 })), { fill: 1, tickW: 2, cursor: t, syl: true });
+    if (act.size) { const g = $("wHvc").getContext("2d"), cvW = $("wHvc").clientWidth, cvH = $("wHvc").clientHeight, X = u => ML + u / MOT * (cvW - ML - MR); g.fillStyle = tok("--hvc"); for (const i of act) { const y = 6 + (i + 0.5) / NH * (cvH - 30); g.beginPath(); g.arc(X(NET.sp[i][0] + 3), y, 5, 0, 7); g.fill(); } }
+    const xs = Array.from({ length: NG }, (_, k) => k * DT3);
+    plot($("wRa"), { x: [0, MOT], y: [0, 3000], ystep: 1000, xstep: 100, xlabel: "ms", ylabel: "RA1 · RA2 · RA3, R(t)", series: [0, 1, 2].map(j => ({ x: xs, y: Array.from(WR[j].R, v => v + (2 - j) * 1000), color: tok("--ink"), w: 1.3 })), vlines: [{ x: t, color: tok("--accent"), w: 2 }] });
+    const k = Math.min(NG - 1, Math.round(t / DT3)), firing = [0, 1, 2].filter(j => WR[j].R[k] > 100).map(j => "RA" + (j + 1));
+    const actList = [...act];
+    $("wWhen").textContent = "t = " + t.toFixed(0) + " ms · " + (sy ? "syllable " + sy.n : "silent gap");
+    $("wHead").textContent = sy ? `Syllable ${sy.n}, ${SYLDESC[sy.n]}` : "A silent gap, and the clock keeps ticking";
+    $("wText").textContent = (actList.length
+      ? `${actList.length} of ${NH} HVC(RA) neurons are bursting now. Each fires at this moment and at no other time in the motif. `
+      : `No HVC(RA) neuron in this sample is bursting at this exact millisecond. With ${NH} neurons, about ${(NH * 6.1 / MOT).toFixed(1)} are active on average; HVC holds tens of thousands. `) +
+      (firing.length ? `${firing.join(" and ")} ${firing.length > 1 ? "are" : "is"} bursting (R(t) > 100 Hz), driven by HVC(RA) neurons that burst a few milliseconds earlier. ` : "None of the three RA neurons shown is bursting right now. ") +
+      (sy ? "" : "Bursts fall in gaps as often as in syllables: the code marks time, not syllables.");
+    $("wLive").innerHTML = `<span class="lhs">readout: RA_j(t) = f(Σ_i w_ij · k(t − t_i − 3.5 ms))</span>` +
+      `<span>HVC(RA) active: ${actList.length ? actList.slice(0, 6).map(i => "#" + (i + 1)).join(", ") + (actList.length > 6 ? "…" : "") : "none"}</span>` +
+      `<span>RA rates now: ${[0, 1, 2].map(j => "RA" + (j + 1) + " " + WR[j].R[k].toFixed(0)).join(" · ")} s⁻¹</span>`;
+  }
+  wT.addEventListener("input", () => { wPlaying = false; drawW(); });
+  $("wPlay").addEventListener("click", () => {
+    const b = $("wPlay"); if (wPlaying) return; wPlaying = true; b.disabled = true;
+    const ok = playSong(t => { if (!wPlaying) return; wT.value = Math.round(t / MOT * 1000); drawW(); }, () => { wPlaying = false; b.disabled = false; });
+    if (!ok) { wPlaying = false; b.disabled = false; }
+  });
+  const wSlow = document.createElement("button"); wSlow.type = "button"; wSlow.textContent = "Slow ×10"; $("wPlay").after(wSlow);
+  wSlow.addEventListener("click", () => {
+    if (wPlaying) return; wPlaying = true; const start = performance.now(), from = +wT.value >= 990 ? 0 : +wT.value;
+    const step = now => { if (!wPlaying) return; const v = from + (now - start) / (MOT * (reduce ? 3 : 10)) * 1000; if (v >= 1000) { wT.value = 1000; drawW(); wPlaying = false; return; } wT.value = Math.round(v); drawW(); requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  });
+
+  // ---------------- init, theme, resize ----------------
+  function drawAll() { specImg = null; drawS1(); drawS2(); drawS3(); if (S4) drawS4(); drawW(); }
+  $("s1JitOut").textContent = (+s1Jit.value).toFixed(2) + " ms";
+  genS1(); statsS1();
+  { const rb = bursts(readout("sparse", NET.W)[0].sp); if (rb.length) { const best = rb.reduce((x, c) => Math.abs(c.on - 450) < Math.abs(x.on - 450) ? c : x); $("s3Err").value = Math.round(best.on + 3); } }
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+  new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  let rz = null; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(drawAll, 80); }).observe(document.querySelector(".wrap"));
+  drawAll();
+  newS4(true);
+  window.__ep2 = { SONG, SR, SYL, MOT };
+})();
+
+</script>
+
+</body>
+</html>
