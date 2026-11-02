@@ -57,7 +57,7 @@ params:
   profileMode:
     enabled: true
     title: Sheetal Jadhav
-    subtitle: "I am an aspiring computational neuroscientist with an Electronics Engineering background and hands-on experience across scales: from wet-lab developmental neurobiology and in vivo electrophysiology in songbirds to large-scale calcium imaging analysis and spiking network models of hippocampal learning. I build biologically grounded models of how plasticity shapes memory and behaviour, constrained by real neural data.\n\nI am also committed to science communication and share neuroscience with a broader audience through Brainy Tales. Outside research, I write and enjoy photography."
+    subtitle: "I am a neuroscientist-in-the-making with an Electronics Engineering background and hands-on experience across scales: from wet-lab developmental neurobiology and in vivo electrophysiology in songbirds to large-scale calcium imaging analysis and spiking network models of hippocampal learning. I build biologically grounded models of how plasticity shapes memory and behaviour, constrained by real neural data.\n\nOutside of research, I am an avid reader and writer. I am a self-taught photographer and an amateur Indian classical singer. Do check out my [writing wall](/books/) and [photography excursions](/photography/).\n\nIn a world where time is a social construct, I feel blissfully at peace sipping my chai while enjoying the sound of rain. Feel free to reach out to me in any way possible, I am always up for a conversation."
     imageUrl: "picture.jpeg"
     imageWidth: 160
     imageHeight: 160
