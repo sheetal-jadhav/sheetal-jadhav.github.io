@@ -3,8 +3,6 @@ title: "CV"
 hidemeta: true
 description: "Curriculum Vitae of Sheetal Jadhav."
 ---
-Aspiring computational neuroscientist with an Electronics Engineering background and hands-on experience across scales: from wet-lab developmental neurobiology and in vivo electrophysiology in songbirds to large-scale calcium imaging analysis and spiking network models of hippocampal learning. I build biologically grounded models of how plasticity shapes memory and behaviour, constrained by real neural data.
-
 + [Download CV (PDF)](/cv.pdf)
 
 ##### EDUCATION
