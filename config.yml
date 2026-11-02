@@ -77,15 +77,15 @@ params:
       - name: Study Notes
         url: notes/
   socialIcons:
-    - name: Substack
-      url: https://yoursthoughtfully.substack.com/
-    - name: GoogleScholar
-      url: https://scholar.google.com/citations?user=cL23W-4AAAAJ
+    - name: Email
+      url: mailto:31jsheetal@gmail.com
     - name: LinkedIn
       url: https://www.linkedin.com/in/sheetal-jadhav-909929335/
+    - name: Substack
+      url: https://yoursthoughtfully.substack.com/
     - name: GitHub
       url: https://github.com/sheetal-jadhav
-    - name: Twitter
+    - name: X
       url: https://x.com/_curiousneuron
     - name: Bluesky
       url: https://bsky.app/profile/thecuriousneuron.bsky.social
