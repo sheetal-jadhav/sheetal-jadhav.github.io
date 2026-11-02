@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<nav class="site-back" style="max-width:1120px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))"><a href="/simulations/" style="font:500 14px/1.4 'IBM Plex Sans',system-ui,sans-serif;color:#8a5cf5;text-decoration:none">&larr; Interactive Simulations</a></nav>
+<title>Hodgkin–Huxley 1952</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,500;1,7..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a methods-paper reading column; each experiment is a two-column row (text + controls | traces), closing with equations and parameters */
+:root {
+  --bg: #f3f5f5;
+  --paper: #ffffff;
+  --ink: #15212b;
+  --muted: #5a6a75;
+  --line: #d3dbdf;
+  --grid: #e6ecee;
+  --accent: #1f6a85;
+  --na: #c4432d;
+  --k: #2b62b5;
+  --leak: #6f7f43;
+  --ok: #2c7a4b;
+  --display: "Literata", Georgia, "Times New Roman", serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1418; --paper: #151d23; --ink: #e2e9ed; --muted: #8b9ba6; --line: #2a3640; --grid: #1f2930;
+    --accent: #6cc0d6; --na: #ff7b5e; --k: #75a8ff; --leak: #b3c47d; --ok: #6fd39a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1418; --paper: #151d23; --ink: #e2e9ed; --muted: #8b9ba6; --line: #2a3640; --grid: #1f2930;
+  --accent: #6cc0d6; --na: #ff7b5e; --k: #75a8ff; --leak: #b3c47d; --ok: #6fd39a; color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--body); font-size: 15.5px; line-height: 1.55; }
+.wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding-block: 32px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 40px;
+}
+h1, h2, h3 { font-family: var(--display); font-weight: 500; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.05; }
+h1 em { font-style: italic; font-weight: 400; }
+h2 { font-size: clamp(22px, 2.6vw, 28px); line-height: 1.15; }
+h3 { font-size: 18px; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--muted); }
+a { color: var(--accent); }
+i.v { font-family: var(--display); font-style: italic; }
+
+/* header */
+header { display: grid; gap: 16px; }
+header .lede { max-width: 68ch; font-size: 17px; color: var(--muted); }
+.series { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.series li { background: var(--paper); padding: 12px; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.series .num { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .08em; }
+.series .t { font-size: 13px; line-height: 1.35; }
+.series .ref { font-family: var(--mono); font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
+@media (max-width: 860px) { .series { grid-template-columns: minmax(0, 1fr); } }
+
+.bar { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; background: var(--paper); color: var(--muted); padding: 7px 12px; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.status { font-size: 13px; color: var(--muted); max-width: 70ch; border-left: 3px solid var(--accent); padding-left: 12px; }
+.status b { color: var(--ink); font-weight: 600; }
+
+/* experiments */
+.exp { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 28px; padding-top: 28px; border-top: 1px solid var(--line); }
+@media (max-width: 900px) { .exp { grid-template-columns: minmax(0, 1fr); } }
+.exp-text { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.exp-text > p { font-size: 15px; }
+.controls { display: grid; gap: 12px; background: var(--paper); border: 1px solid var(--line); padding: 14px; }
+.field { display: grid; gap: 4px; }
+.field label { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.field output { font-family: var(--mono); font-size: 12.5px; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+select { font: 500 13px var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); padding: 7px 8px; border-radius: 3px; width: 100%; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 13px; }
+.check input { accent-color: var(--accent); }
+button { font: 500 13px var(--body); color: var(--ink); background: var(--paper); border: 1px solid var(--line); padding: 8px 12px; border-radius: 3px; cursor: pointer; }
+button:hover { border-color: var(--muted); }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.result { display: grid; gap: 6px; font-size: 13.5px; }
+.result h3 { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+.cmp { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-variant-numeric: tabular-nums; }
+.cmp dt { color: var(--muted); }
+.cmp dd { margin: 0; font-family: var(--mono); font-size: 13px; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11px; padding: 1px 7px; border-radius: 99px; border: 1px solid currentColor; }
+.pill.ok { color: var(--ok); }
+.pill.na { color: var(--muted); }
+
+.exp-plots { display: grid; gap: 14px; min-width: 0; align-content: start; }
+figure { margin: 0; background: var(--paper); border: 1px solid var(--line); padding: 10px 10px 8px; display: grid; gap: 6px; min-width: 0; align-content: start; }
+figure canvas { display: block; width: 100%; height: 240px; }
+figure canvas.short { height: 170px; }
+figcaption { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); }
+.key { display: inline-flex; align-items: center; gap: 6px; }
+.key::before { content: ""; width: 16px; height: 0; border-top: 2px solid var(--c, var(--ink)); }
+.key.dash::before { border-top-style: dashed; }
+.key.dot::before { width: 7px; height: 7px; border: 0; border-radius: 50%; background: var(--c); }
+.cap-title { color: var(--ink); font-weight: 500; margin-right: auto; }
+
+/* synthesis */
+.whole { display: grid; gap: 26px; padding-top: 28px; border-top: 1px solid var(--line); }
+.whole > header { gap: 10px; }
+.chain { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); background: var(--paper); }
+.chain li { padding: 14px 14px 14px 16px; display: grid; gap: 4px; align-content: start; border-right: 1px solid var(--line); position: relative; min-width: 0; }
+.chain li:last-child { border-right: 0; }
+.chain .stepn { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .08em; }
+.chain b { font-family: var(--display); font-weight: 500; font-size: 17px; }
+.chain p { font-size: 13px; color: var(--muted); }
+.chain a { font-size: 12px; font-family: var(--mono); }
+@media (max-width: 860px) { .chain { grid-template-columns: minmax(0, 1fr); } .chain li { border-right: 0; border-bottom: 1px solid var(--line); } .chain li:last-child { border-bottom: 0; } }
+.anatomy { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .anatomy { grid-template-columns: minmax(0, 1fr); } }
+.stack { display: grid; gap: 0; background: var(--paper); border: 1px solid var(--line); padding: 10px; min-width: 0; }
+.stack canvas { display: block; width: 100%; height: 190px; }
+.stack canvas + canvas { border-top: 1px dashed var(--grid); }
+.stack .scrub { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding-top: 10px; }
+.stack .scrub output { font-family: var(--mono); font-size: 12px; color: var(--accent); font-variant-numeric: tabular-nums; min-width: 7ch; text-align: right; }
+.phases { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 10px; }
+.phases button { font-size: 12px; padding: 5px 9px; }
+.phases button[aria-current="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.narr { display: grid; gap: 12px; background: var(--paper); border: 1px solid var(--line); padding: 16px; min-width: 0; }
+.narr h3 { font-size: 21px; }
+.narr .when { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.narr p { font-size: 14.5px; }
+.live { font-family: var(--mono); font-size: 12.5px; background: var(--bg); border: 1px solid var(--line); padding: 10px; display: grid; gap: 3px; overflow-x: auto; font-variant-numeric: tabular-nums; }
+.live .lhs { color: var(--muted); }
+.live .na { color: var(--na); } .live .k { color: var(--k); } .live .l { color: var(--leak); }
+.verdict { font-size: 13px; border-left: 3px solid var(--accent); padding-left: 10px; }
+.fitpred { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 36px; }
+@media (max-width: 860px) { .fitpred { grid-template-columns: minmax(0, 1fr); } }
+.fitpred ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+.legacy { max-width: 72ch; font-size: 15px; display: grid; gap: 10px; }
+
+/* methods */
+.methods { display: grid; gap: 22px; padding-top: 28px; border-top: 1px solid var(--line); }
+.mgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 36px; }
+@media (max-width: 860px) { .mgrid { grid-template-columns: minmax(0, 1fr); } }
+.eqs { display: grid; gap: 8px; background: var(--paper); border: 1px solid var(--line); padding: 16px; overflow-x: auto; }
+.eq { font-family: var(--display); font-size: 16px; white-space: nowrap; }
+.eq .no { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-left: 10px; }
+.eq sub, .eq sup { font-size: .72em; }
+.tbl-wrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 7px 12px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mlist { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 6px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Neuro simulations · Episode 01</span>
+    <h1>Hodgkin–Huxley, <em>1952</em></h1>
+    <p class="lede">The squid giant axon model, run from the original equations and constants. Each experiment below repeats a protocol from the five 1952 papers in <i>The Journal of Physiology</i> and compares the computed result with the published value.</p>
+    <ol class="series" aria-label="The five 1952 papers">
+      <li><span class="num">PAPER I</span><span class="t">Measurement of current–voltage relations (with Katz)</span><span class="ref">116:424–448</span></li>
+      <li><span class="num">PAPER II</span><span class="t">Currents carried by sodium and potassium ions</span><span class="ref">116:449–472</span></li>
+      <li><span class="num">PAPER III</span><span class="t">The components of membrane conductance</span><span class="ref">116:473–496</span></li>
+      <li><span class="num">PAPER IV</span><span class="t">The dual effect of membrane potential on sodium conductance</span><span class="ref">116:497–506</span></li>
+      <li><span class="num">PAPER V</span><span class="t">A quantitative description of membrane current…</span><span class="ref">117:500–544</span></li>
+    </ol>
+    <div class="bar">
+      <div class="row">
+        <span class="muted" id="convLabel" style="font-size:13px">Voltage axis</span>
+        <div class="seg" role="group" aria-labelledby="convLabel">
+          <button type="button" id="conv1952" aria-pressed="true">1952: −V from rest</button>
+          <button type="button" id="convModern" aria-pressed="false">Modern: V<sub>m</sub> = −65 − V</button>
+        </div>
+      </div>
+    </div>
+    <p class="status"><b>Verification status.</b> Equations and constants follow Paper V (the rate equations and Table 3). They are checked here by reproducing three of its published results: the 6–7 mV threshold, the 18.8 m/s calculated conduction velocity, and zero ionic current at rest. They have not yet been checked line by line against the PDF; that check is pending.</p>
+  </header>
+
+  <!-- 1. Membrane action potential -->
+  <section class="exp" id="ap" aria-labelledby="apTitle">
+    <div class="exp-text">
+      <span class="eyebrow">Paper V · membrane action potential</span>
+      <h2 id="apTitle">An all-or-none spike from a quick shock</h2>
+      <p>With the axon space-clamped, a brief shock displaces the membrane by a set amount and the model runs freely. Paper V computes responses to initial depolarisations of 6, 7, 15 and 90 mV at 6.3 °C: 6 mV decays, 7 mV fires.</p>
+      <div class="controls">
+        <div class="field"><label for="apDep">Initial depolarisation <output id="apDepOut"></output></label><input type="range" id="apDep" min="0" max="100" step="0.5" value="15"></div>
+        <div class="field"><label for="apT">Temperature <output id="apTOut"></output></label><input type="range" id="apT" min="0" max="30" step="0.1" value="6.3"></div>
+        <label class="check"><input type="checkbox" id="apPaper" checked> Overlay the paper’s 6, 7, 15 and 90 mV shocks</label>
+      </div>
+      <div class="result">
+        <h3>Comparison with Paper V</h3>
+        <dl class="cmp">
+          <dt>Threshold, computed</dt><dd id="apThr">–</dd>
+          <dt>Paper V, 6.3 °C</dt><dd>6 mV no spike · 7 mV spike</dd>
+          <dt>Spike peak</dt><dd id="apPeak">–</dd>
+        </dl>
+        <span id="apPill"></span>
+      </div>
+    </div>
+    <div class="exp-plots">
+      <figure><canvas id="apV"></canvas><figcaption><span class="cap-title">Membrane potential</span><span class="key" style="--c:var(--ink)">selected shock</span><span class="key dash" style="--c:var(--muted)">paper’s four shocks</span></figcaption></figure>
+      <figure><canvas id="apG" class="short"></canvas><figcaption><span class="cap-title">Conductances</span><span class="key" style="--c:var(--na)">g<sub>Na</sub> = ḡ<sub>Na</sub>m³h</span><span class="key" style="--c:var(--k)">g<sub>K</sub> = ḡ<sub>K</sub>n⁴</span></figcaption></figure>
+      <figure><canvas id="apX" class="short"></canvas><figcaption><span class="cap-title">Gating variables</span><span class="key" style="--c:var(--na)">m</span><span class="key dash" style="--c:var(--na)">h</span><span class="key" style="--c:var(--k)">n</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 2. Excitation protocols -->
+  <section class="exp" id="exc" aria-labelledby="excTitle">
+    <div class="exp-text">
+      <span class="eyebrow">Paper V · refractoriness, anode break, repetitive firing</span>
+      <h2 id="excTitle">How the same equations explain excitability</h2>
+      <p id="excText"></p>
+      <div class="controls">
+        <div class="field"><label for="excProto">Protocol</label>
+          <select id="excProto">
+            <option value="paired">Paired shocks (refractory period)</option>
+            <option value="anode">Anode break (release from hyperpolarisation)</option>
+            <option value="rep">Sustained current (repetitive firing)</option>
+          </select>
+        </div>
+        <div class="field" data-proto="paired"><label for="exShock">Shock size <output id="exShockOut"></output></label><input type="range" id="exShock" min="5" max="100" step="1" value="15"></div>
+        <div class="field" data-proto="paired"><label for="exGap">Interval between shocks <output id="exGapOut"></output></label><input type="range" id="exGap" min="1" max="30" step="0.25" value="12"></div>
+        <div class="field" data-proto="anode"><label for="exHyp">Hyperpolarisation before release <output id="exHypOut"></output></label><input type="range" id="exHyp" min="0" max="60" step="0.5" value="30"></div>
+        <div class="field" data-proto="rep"><label for="exI">Applied current (depolarising) <output id="exIOut"></output></label><input type="range" id="exI" min="0" max="60" step="0.5" value="20"></div>
+        <div class="field"><label for="exT">Temperature <output id="exTOut"></output></label><input type="range" id="exT" min="0" max="30" step="0.1" value="6.3"></div>
+      </div>
+      <div class="result">
+        <h3>Computed</h3>
+        <dl class="cmp" id="excResult"></dl>
+      </div>
+    </div>
+    <div class="exp-plots">
+      <figure><canvas id="exV"></canvas><figcaption><span class="cap-title">Membrane potential</span><span class="key" style="--c:var(--ink)">V</span></figcaption></figure>
+      <figure><canvas id="exS" class="short"></canvas><figcaption><span class="cap-title" id="exSTitle">Stimulus</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 3. Voltage clamp -->
+  <section class="exp" id="vc" aria-labelledby="vcTitle">
+    <div class="exp-text">
+      <span class="eyebrow">Papers I–III · voltage clamp</span>
+      <h2 id="vcTitle">Holding the voltage separates the two currents</h2>
+      <p>Under voltage clamp the membrane potential is stepped and held, so each gate relaxes exponentially to its new steady state. Sodium conductance rises and then inactivates. Potassium conductance rises with a delay, following n⁴, and stays up.</p>
+      <div class="controls">
+        <div class="field"><label for="vcDep">Depolarising step <output id="vcDepOut"></output></label><input type="range" id="vcDep" min="0" max="130" step="1" value="56"></div>
+        <div class="field"><label for="vcT">Temperature <output id="vcTOut"></output></label><input type="range" id="vcT" min="0" max="30" step="0.1" value="6.3"></div>
+        <label class="check"><input type="checkbox" id="vcFam" checked> Show a family of steps (10–130 mV)</label>
+      </div>
+      <div class="result">
+        <h3>At the selected step</h3>
+        <dl class="cmp" id="vcResult"></dl>
+      </div>
+    </div>
+    <div class="exp-plots">
+      <figure><canvas id="vcG"></canvas><figcaption><span class="cap-title">Conductances</span><span class="key" style="--c:var(--na)">g<sub>Na</sub></span><span class="key" style="--c:var(--k)">g<sub>K</sub></span></figcaption></figure>
+      <figure><canvas id="vcI" class="short"></canvas><figcaption><span class="cap-title">Ionic currents at the selected step</span><span class="key" style="--c:var(--na)">I<sub>Na</sub></span><span class="key" style="--c:var(--k)">I<sub>K</sub></span><span class="key" style="--c:var(--ink)">I<sub>i</sub> total</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 4. Inactivation -->
+  <section class="exp" id="inact" aria-labelledby="inTitle">
+    <div class="exp-text">
+      <span class="eyebrow">Paper IV · sodium inactivation</span>
+      <h2 id="inTitle">A conditioning step sets how much sodium current is available</h2>
+      <p>The membrane is held at a conditioning voltage long enough for <i class="v">h</i> to settle, then stepped to a fixed test depolarisation. The peak sodium current, normalised to its largest value, traces the steady-state inactivation curve <i class="v">h</i><sub>∞</sub>(V).</p>
+      <div class="controls">
+        <div class="field"><label for="inPre">Conditioning duration <output id="inPreOut"></output></label><input type="range" id="inPre" min="1" max="100" step="1" value="50"></div>
+        <div class="field"><label for="inTest">Test depolarisation <output id="inTestOut"></output></label><input type="range" id="inTest" min="20" max="110" step="1" value="44"></div>
+        <div class="field"><label for="inT">Temperature <output id="inTOut"></output></label><input type="range" id="inT" min="0" max="30" step="0.1" value="6.3"></div>
+      </div>
+      <div class="result">
+        <h3>Computed</h3>
+        <dl class="cmp" id="inResult"></dl>
+      </div>
+    </div>
+    <div class="exp-plots">
+      <figure><canvas id="inH"></canvas><figcaption><span class="cap-title">Available sodium current vs conditioning voltage</span><span class="key" style="--c:var(--na)">h∞ from the rate equations</span><span class="key dot" style="--c:var(--ink)">simulated pulse protocol</span></figcaption></figure>
+      <figure><canvas id="inI" class="short"></canvas><figcaption><span class="cap-title">Test-pulse I<sub>Na</sub> after five conditioning voltages</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 5. Propagation -->
+  <section class="exp" id="prop" aria-labelledby="prTitle">
+    <div class="exp-text">
+      <span class="eyebrow">Paper V · propagated action potential</span>
+      <h2 id="prTitle">The spike travels down the axon</h2>
+      <p>Adding the axon’s cable properties turns the membrane equation into a partial differential equation in space and time. Paper V solved it for a fibre of radius 238 µm and axoplasm resistivity 35.4 Ω cm at 18.5 °C, giving a calculated velocity of 18.8 m/s against 21.2 m/s measured.</p>
+      <div class="controls">
+        <div class="field"><label for="prT">Temperature <output id="prTOut"></output></label><input type="range" id="prT" min="5" max="30" step="0.1" value="18.5"></div>
+        <div class="field"><label for="prA">Axon radius <output id="prAOut"></output></label><input type="range" id="prA" min="50" max="500" step="1" value="238"></div>
+        <div class="field"><label for="prR">Axoplasm resistivity R₂ <output id="prROut"></output></label><input type="range" id="prR" min="10" max="100" step="0.1" value="35.4"></div>
+        <div class="row"><button type="button" class="primary" id="prPlay">Play</button><span class="muted" id="prBusy" style="font-size:12px"></span></div>
+        <div class="field"><label for="prScrub">Time <output id="prScrubOut"></output></label><input type="range" id="prScrub" min="0" max="1000" step="1" value="0"></div>
+      </div>
+      <div class="result">
+        <h3>Comparison with Paper V</h3>
+        <dl class="cmp">
+          <dt>Velocity, computed</dt><dd id="prVel">–</dd>
+          <dt>Paper V, calculated</dt><dd>18.8 m/s</dd>
+          <dt>Paper V, measured</dt><dd>21.2 m/s</dd>
+        </dl>
+        <span id="prPill"></span>
+      </div>
+    </div>
+    <div class="exp-plots">
+      <figure><canvas id="prX"></canvas><figcaption><span class="cap-title">Membrane potential along 6 cm of axon</span><span class="key" style="--c:var(--accent)">V(x) now</span><span class="key dash" style="--c:var(--muted)">recording sites</span></figcaption></figure>
+      <figure><canvas id="prTt" class="short"></canvas><figcaption><span class="cap-title">Recorded at two sites</span><span class="key" style="--c:var(--ink)">x = 2 cm</span><span class="key" style="--c:var(--accent)">x = 4 cm</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- Synthesis -->
+  <section class="whole" id="whole" aria-labelledby="wTitle">
+    <header>
+      <span class="eyebrow">Putting it together</span>
+      <h2 id="wTitle">From five papers to one spike</h2>
+      <p class="lede" style="max-width:70ch;color:var(--muted)">The papers form a single argument. Measure the currents with the voltage held fixed. Separate them by ion. Describe each with gating variables. Then, with nothing left to adjust, compute the action potential and see whether it matches the real one.</p>
+    </header>
+    <ol class="chain">
+      <li><span class="stepn">STEP 1 · PAPER I</span><b>Measure</b><p>The voltage clamp holds V fixed, so the current that flows is purely ionic plus a brief capacitive transient.</p><a href="#vc">See the clamp ↑</a></li>
+      <li><span class="stepn">STEP 2 · PAPER II</span><b>Separate</b><p>Replacing external sodium with choline removes I<sub>Na</sub>, so the total current splits into a sodium part and a potassium part.</p><a href="#vc">See I<sub>Na</sub> and I<sub>K</sub> ↑</a></li>
+      <li><span class="stepn">STEP 3 · PAPERS III–IV</span><b>Describe</b><p>Each current is a conductance times a driving force. g<sub>K</sub> follows n⁴. g<sub>Na</sub> follows m³h: fast activation and slower inactivation.</p><a href="#inact">See inactivation ↑</a></li>
+      <li><span class="stepn">STEP 4 · PAPER V</span><b>Predict the spike</b><p>The fitted equations are combined with the membrane capacitance and solved. Threshold, shape and refractoriness all come out of them.</p><a href="#ap">See the spike ↑</a></li>
+      <li><span class="stepn">STEP 5 · PAPER V</span><b>Predict propagation</b><p>Adding cable properties gives a travelling wave: 18.8 m/s calculated against 21.2 m/s measured.</p><a href="#prop">See it travel ↑</a></li>
+    </ol>
+
+    <h3>Anatomy of one action potential</h3>
+    <div class="anatomy">
+      <div class="stack">
+        <canvas id="wV" aria-label="Membrane potential with sodium and potassium equilibrium potentials"></canvas>
+        <canvas id="wG" aria-label="Sodium and potassium conductances"></canvas>
+        <canvas id="wI" aria-label="Sodium, potassium and leak currents"></canvas>
+        <div class="scrub">
+          <button type="button" class="primary" id="wPlay">Play</button>
+          <input type="range" id="wT" min="0" max="1000" step="1" value="120" aria-label="Time cursor">
+          <output id="wTOut"></output>
+        </div>
+        <div class="phases" id="wPhases" role="group" aria-label="Jump to phase"></div>
+      </div>
+      <div class="narr" aria-live="polite">
+        <span class="when" id="wWhen"></span>
+        <h3 id="wHead"></h3>
+        <p id="wText"></p>
+        <div class="live" id="wEq"></div>
+        <p class="verdict" id="wTest"></p>
+      </div>
+    </div>
+    <p class="muted" style="font-size:13px">A 15 mV quick shock at 6.3 °C, as in the first experiment. Upper panel: the dashed lines are V<sub>Na</sub> and V<sub>K</sub>, the limits each current pulls the membrane toward. The shaded band marks the current phase.</p>
+
+    <div class="fitpred">
+      <div>
+        <h3 style="margin-bottom:8px">Fitted to voltage-clamp data</h3>
+        <ul>
+          <li>Maximum conductances ḡ<sub>Na</sub>, ḡ<sub>K</sub>, ḡ<sub>l</sub></li>
+          <li>Reversal potentials V<sub>Na</sub>, V<sub>K</sub>, V<sub>l</sub></li>
+          <li>The six rate functions α and β for m, h and n</li>
+          <li>The exponents (m³, n⁴), chosen to reproduce the delayed rise of the conductances</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="margin-bottom:8px">Predicted, never fitted</h3>
+        <ul>
+          <li>The all-or-none threshold (6–7 mV for a quick shock)</li>
+          <li>The shape, overshoot and undershoot of the action potential</li>
+          <li>Absolute and relative refractory periods</li>
+          <li>Anode-break excitation and repetitive firing</li>
+          <li>Conduction velocity: 18.8 m/s against 21.2 m/s measured</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="legacy">
+      <h3>Why it still matters</h3>
+      <p>Hodgkin and Huxley showed that excitability follows from two voltage-dependent conductances and the membrane capacitance, with no extra mechanism. Their gating particles predicted voltage-gated ion channels before anyone could see one. Single channels were first recorded with the patch clamp (Neher and Sakmann, 1976). The same conductance-based form, I = C dV/dt + Σ g(V − E), underlies most biophysical neuron models in use today. Hodgkin and Huxley shared the 1963 Nobel Prize in Physiology or Medicine with John Eccles.</p>
+    </div>
+  </section>
+
+  <!-- Methods -->
+  <section class="methods" aria-labelledby="mTitle">
+    <span class="eyebrow">Methods</span>
+    <h2 id="mTitle">Equations, constants and numerics</h2>
+    <div class="mgrid">
+      <div style="display:grid;gap:12px;min-width:0">
+        <h3>Model (Paper V, 1952 sign convention)</h3>
+        <div class="eqs">
+          <div class="eq"><i>I</i> = <i>C</i><sub>M</sub> d<i>V</i>/d<i>t</i> + ḡ<sub>K</sub><i>n</i><sup>4</sup>(<i>V</i> − <i>V</i><sub>K</sub>) + ḡ<sub>Na</sub><i>m</i><sup>3</sup><i>h</i>(<i>V</i> − <i>V</i><sub>Na</sub>) + ḡ<sub>l</sub>(<i>V</i> − <i>V</i><sub>l</sub>)</div>
+          <div class="eq">d<i>x</i>/d<i>t</i> = α<sub><i>x</i></sub>(1 − <i>x</i>) − β<sub><i>x</i></sub><i>x</i>,&nbsp;&nbsp;<i>x</i> ∈ {<i>m</i>, <i>h</i>, <i>n</i>}</div>
+          <div class="eq">α<sub><i>n</i></sub> = 0.01(<i>V</i> + 10) / [exp((<i>V</i> + 10)/10) − 1]</div>
+          <div class="eq">β<sub><i>n</i></sub> = 0.125 exp(<i>V</i>/80)</div>
+          <div class="eq">α<sub><i>m</i></sub> = 0.1(<i>V</i> + 25) / [exp((<i>V</i> + 25)/10) − 1]</div>
+          <div class="eq">β<sub><i>m</i></sub> = 4 exp(<i>V</i>/18)</div>
+          <div class="eq">α<sub><i>h</i></sub> = 0.07 exp(<i>V</i>/20)</div>
+          <div class="eq">β<sub><i>h</i></sub> = 1 / [exp((<i>V</i> + 30)/10) + 1]</div>
+          <div class="eq">all α, β × φ,&nbsp;&nbsp;φ = 3<sup>(<i>T</i> − 6.3)/10</sup></div>
+          <div class="eq">(<i>a</i>/2<i>R</i><sub>2</sub>) ∂²<i>V</i>/∂<i>x</i>² = <i>C</i><sub>M</sub> ∂<i>V</i>/∂<i>t</i> + <i>I</i><sub>i</sub><span class="no">propagated case</span></div>
+        </div>
+        <p class="muted" style="font-size:13.5px">V is the displacement from the resting potential in mV, with depolarisation negative. Inward current is positive, which the constants imply: with V<sub>Na</sub> = −115 mV the sodium current comes out positive. The modern display flips both voltage and current, so that depolarisation and outward current are positive. α and β are in ms⁻¹, t in ms, I in µA/cm², g in mS/cm². At V = −10 and V = −25 the expressions for α<sub>n</sub> and α<sub>m</sub> are 0/0 and take their limits, 0.1 and 1.0 ms⁻¹.</p>
+      </div>
+      <div style="display:grid;gap:12px;min-width:0">
+        <h3>Constants</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Symbol</th><th>Value</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td>C<sub>M</sub></td><td class="num">1.0 µF/cm²</td><td>Membrane capacitance</td></tr>
+              <tr><td>ḡ<sub>Na</sub></td><td class="num">120 mS/cm²</td><td>Maximum sodium conductance</td></tr>
+              <tr><td>ḡ<sub>K</sub></td><td class="num">36 mS/cm²</td><td>Maximum potassium conductance</td></tr>
+              <tr><td>ḡ<sub>l</sub></td><td class="num">0.3 mS/cm²</td><td>Leak conductance</td></tr>
+              <tr><td>V<sub>Na</sub></td><td class="num">−115 mV</td><td>Sodium equilibrium potential (relative to rest)</td></tr>
+              <tr><td>V<sub>K</sub></td><td class="num">+12 mV</td><td>Potassium equilibrium potential</td></tr>
+              <tr><td>V<sub>l</sub></td><td class="num">−10.613 mV</td><td>Leak reversal, chosen so total ionic current is zero at rest</td></tr>
+              <tr><td>T</td><td class="num">6.3 °C</td><td>Reference temperature for the rate equations</td></tr>
+              <tr><td>a</td><td class="num">238 µm</td><td>Axon radius (propagation)</td></tr>
+              <tr><td>R<sub>2</sub></td><td class="num">35.4 Ω cm</td><td>Axoplasm resistivity (propagation)</td></tr>
+              <tr><td>T</td><td class="num">18.5 °C</td><td>Temperature of the propagated calculation</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="row"><button type="button" id="copyJson">Copy constants as JSON</button><span class="muted" id="copyMsg" style="font-size:12px"></span></div>
+      </div>
+      <div style="display:grid;gap:12px;min-width:0">
+        <h3>Numerical methods</h3>
+        <ul class="mlist">
+          <li><b>Space-clamped runs</b> (experiments 1–2): fourth-order Runge–Kutta, Δt = 0.01/φ ms (0.01 ms at 6.3 °C).</li>
+          <li><b>Voltage clamp</b> (3–4): exact solution. With V held fixed each gate follows x(t) = x∞ − (x∞ − x₀)e<sup>−t/τ</sup>, with x∞ = α/(α+β) and τ = 1/(α+β). The clamp is ideal: no capacitive transient and no series resistance.</li>
+          <li><b>Cable</b> (5): second-order central differences in space, Δx = 0.25 mm over 6 cm (241 nodes), sealed ends. V is advanced by forward Euler with Δt = 0.2 Δx²/D, where D = a/(2R₂C<sub>M</sub>). The gates are advanced by the exact exponential (Rush–Larsen) update, with rates tabulated every 0.01 mV and linearly interpolated. The stimulus is 3 mA/cm² for 0.1 ms over the first 2 mm.</li>
+          <li><b>Velocity</b> is the inverse slope of a least-squares fit of the time each node passes 50 mV depolarisation, against position, for 1.5–4.5 cm. Halving Δx moves it by less than 0.1 m/s (0.5 → 0.25 → 0.125 mm: 18.55, 18.68, 18.72 m/s at the paper’s settings).</li>
+          <li><b>Spike criterion</b>: depolarisation beyond 50 mV. Thresholds are found by bisection to 0.01 mV.</li>
+        </ul>
+      </div>
+      <div style="display:grid;gap:12px;min-width:0">
+        <h3>What the model leaves out</h3>
+        <ul class="mlist">
+          <li>Gating is deterministic. There is no channel noise, so firing near threshold is perfectly repeatable.</li>
+          <li>Concentrations are fixed. There is no Na⁺/K⁺ accumulation or pump current, and repetitive firing runs indefinitely.</li>
+          <li>Reversal potentials are constants, not computed from the Nernst equation.</li>
+          <li>The cable is a uniform, unmyelinated cylinder with no extracellular resistance.</li>
+          <li>The modern voltage axis (V<sub>m</sub> = −65 − V) relabels the display only. A resting potential of −65 mV is a common modern choice, not a value from the 1952 papers.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Hodgkin AL, Huxley AF, Katz B (1952) J Physiol 116:424–448 · <a href="https://doi.org/10.1113/jphysiol.1952.sp004716" target="_blank" rel="noopener">doi:10.1113/jphysiol.1952.sp004716</a></p>
+    <p>Hodgkin AL, Huxley AF (1952) J Physiol 116:449–472 · <a href="https://doi.org/10.1113/jphysiol.1952.sp004717" target="_blank" rel="noopener">doi:10.1113/jphysiol.1952.sp004717</a></p>
+    <p>Hodgkin AL, Huxley AF (1952) J Physiol 116:473–496 · <a href="https://doi.org/10.1113/jphysiol.1952.sp004718" target="_blank" rel="noopener">doi:10.1113/jphysiol.1952.sp004718</a></p>
+    <p>Hodgkin AL, Huxley AF (1952) J Physiol 116:497–506 · <a href="https://doi.org/10.1113/jphysiol.1952.sp004719" target="_blank" rel="noopener">doi:10.1113/jphysiol.1952.sp004719</a></p>
+    <p>Hodgkin AL, Huxley AF (1952) J Physiol 117:500–544 · <a href="https://doi.org/10.1113/jphysiol.1952.sp004764" target="_blank" rel="noopener">doi:10.1113/jphysiol.1952.sp004764</a></p>
+    <p>Every number on this page is computed in your browser from the equations above.</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  // ================= model (Paper V, 1952 convention) =================
+  const P = { C: 1.0, gNa: 120, gK: 36, gL: 0.3, ENa: -115, EK: 12, EL: -10.613 };
+  const phi = T => Math.pow(3, (T - 6.3) / 10);
+  function rates(V, f) {
+    const an = Math.abs(V + 10) < 1e-7 ? 0.1 : 0.01 * (V + 10) / (Math.exp((V + 10) / 10) - 1);
+    const bn = 0.125 * Math.exp(V / 80);
+    const am = Math.abs(V + 25) < 1e-7 ? 1.0 : 0.1 * (V + 25) / (Math.exp((V + 25) / 10) - 1);
+    const bm = 4 * Math.exp(V / 18);
+    const ah = 0.07 * Math.exp(V / 20);
+    const bh = 1 / (Math.exp((V + 30) / 10) + 1);
+    return [am * f, bm * f, ah * f, bh * f, an * f, bn * f];
+  }
+  function steady(V, f) { const [am, bm, ah, bh, an, bn] = rates(V, f); return [V, am / (am + bm), ah / (ah + bh), an / (an + bn)]; }
+  function ionic(V, m, h, n) {
+    const INa = P.gNa * m * m * m * h * (V - P.ENa), IK = P.gK * n * n * n * n * (V - P.EK), IL = P.gL * (V - P.EL);
+    return [INa, IK, IL];
+  }
+  function deriv(s, I, f) {
+    const [V, m, h, n] = s, [am, bm, ah, bh, an, bn] = rates(V, f), [a, b, c] = ionic(V, m, h, n);
+    return [(I - a - b - c) / P.C, am * (1 - m) - bm * m, ah * (1 - h) - bh * h, an * (1 - n) - bn * n];
+  }
+  function rk4(s, I, f, dt) {
+    const k1 = deriv(s, I, f);
+    const s2 = [s[0] + dt / 2 * k1[0], s[1] + dt / 2 * k1[1], s[2] + dt / 2 * k1[2], s[3] + dt / 2 * k1[3]];
+    const k2 = deriv(s2, I, f);
+    const s3 = [s[0] + dt / 2 * k2[0], s[1] + dt / 2 * k2[1], s[2] + dt / 2 * k2[2], s[3] + dt / 2 * k2[3]];
+    const k3 = deriv(s3, I, f);
+    const s4 = [s[0] + dt * k3[0], s[1] + dt * k3[1], s[2] + dt * k3[2], s[3] + dt * k3[3]];
+    const k4 = deriv(s4, I, f);
+    return [0, 1, 2, 3].map(i => s[i] + dt / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]));
+  }
+  // o: {T, tmax, dep, shocks:[{t,dep}], I:(t)=>depolarising µA/cm², init:[V,m,h,n], record:bool}
+  function simMembrane(o) {
+    const f = phi(o.T), dt = Math.min(0.01, 0.01 / f), N = Math.round(o.tmax / dt);
+    let s = o.init ? o.init.slice() : steady(0, f);
+    if (o.dep) s[0] -= o.dep;
+    const shocks = (o.shocks || []).slice().sort((a, b) => a.t - b.t);
+    let si = 0;
+    const every = Math.max(1, Math.round(0.02 / dt));
+    const out = { t: [], V: [], m: [], h: [], n: [], gNa: [], gK: [], I: [], minV: 0, spikes: [] };
+    let inSpike = false;
+    for (let k = 0; k <= N; k++) {
+      const t = k * dt;
+      while (si < shocks.length && shocks[si].t <= t + 1e-9) { s[0] -= shocks[si].dep; si++; }
+      const Iapp = o.I ? o.I(t) : 0;
+      if (s[0] < out.minV) out.minV = s[0];
+      if (!inSpike && s[0] < -50) { inSpike = true; out.spikes.push(t); }
+      else if (inSpike && s[0] > -20) inSpike = false;
+      if (o.record !== false && k % every === 0) {
+        out.t.push(t); out.V.push(s[0]); out.m.push(s[1]); out.h.push(s[2]); out.n.push(s[3]);
+        out.gNa.push(P.gNa * s[1] ** 3 * s[2]); out.gK.push(P.gK * s[3] ** 4); out.I.push(Iapp);
+      }
+      s = rk4(s, -Iapp, f, dt);
+    }
+    return out;
+  }
+  function bisect(lo, hi, fires, tol = 0.01) {
+    if (!fires(hi)) return null;
+    if (fires(lo)) return lo;
+    while (hi - lo > tol) { const mid = (lo + hi) / 2; if (fires(mid)) hi = mid; else lo = mid; }
+    return (lo + hi) / 2;
+  }
+
+  // ================= display convention =================
+  let conv = "1952";
+  const D = V => conv === "1952" ? -V : -65 - V;
+  const vLabel = () => conv === "1952" ? "−V (mV)" : "Vm (mV)";
+  const vRange = () => conv === "1952" ? [-20, 120] : [-85, 55];
+  const DI = I => conv === "1952" ? I : -I;
+  const iLabel = () => conv === "1952" ? "I (µA/cm², inward +)" : "I (µA/cm², outward +)";
+  const fmt = (x, d = 1) => (x < 0 ? "−" : "") + Math.abs(x).toFixed(d);
+
+  // ================= plotting =================
+  function tok(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function niceStep(r, n) { const raw = r / n, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p; }
+  function plot(cv, o) {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const W = cv.clientWidth, H = cv.clientHeight;
+    if (!W || !H) return;
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    const g = cv.getContext("2d");
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, W, H);
+    const M = { l: 50, r: 10, t: 8, b: 34 };
+    const [x0, x1] = o.x, [y0, y1] = o.y;
+    const X = x => M.l + (x - x0) / (x1 - x0) * (W - M.l - M.r);
+    const Y = y => H - M.b - (y - y0) / (y1 - y0) * (H - M.t - M.b);
+    const cGrid = tok("--grid"), cMuted = tok("--muted"), cLine = tok("--line"), mono = tok("--mono");
+    g.font = `11px ${mono}`; g.lineWidth = 1;
+    const xs = o.xstep || niceStep(x1 - x0, Math.max(3, Math.floor((W - M.l) / 80)));
+    const ys = o.ystep || niceStep(y1 - y0, 4);
+    g.textAlign = "center"; g.textBaseline = "top";
+    for (let v = Math.ceil(x0 / xs) * xs; v <= x1 + 1e-9; v += xs) {
+      g.strokeStyle = cGrid; g.beginPath(); g.moveTo(X(v) + .5, M.t); g.lineTo(X(v) + .5, H - M.b); g.stroke();
+      g.fillStyle = cMuted; g.fillText(fmtTick(v, xs), X(v), H - M.b + 5);
+    }
+    g.textAlign = "right"; g.textBaseline = "middle";
+    for (let v = Math.ceil(y0 / ys) * ys; v <= y1 + 1e-9; v += ys) {
+      g.strokeStyle = Math.abs(v) < 1e-9 ? cLine : cGrid; g.beginPath(); g.moveTo(M.l, Y(v) + .5); g.lineTo(W - M.r, Y(v) + .5); g.stroke();
+      g.fillStyle = cMuted; g.fillText(fmtTick(v, ys), M.l - 6, Y(v));
+    }
+    g.strokeStyle = cLine; g.strokeRect(M.l + .5, M.t + .5, W - M.l - M.r - 1, H - M.t - M.b - 1);
+    g.fillStyle = cMuted; g.textAlign = "center"; g.textBaseline = "bottom";
+    g.fillText(o.xlabel || "", M.l + (W - M.l - M.r) / 2, H - 1);
+    g.save(); g.translate(11, M.t + (H - M.t - M.b) / 2); g.rotate(-Math.PI / 2); g.textBaseline = "middle"; g.fillText(o.ylabel || "", 0, 0); g.restore();
+    g.save(); g.beginPath(); g.rect(M.l, M.t, W - M.l - M.r, H - M.t - M.b); g.clip();
+    for (const b of o.bands || []) { g.fillStyle = b.color; g.globalAlpha = b.alpha ?? 0.1; g.fillRect(X(b.x0), M.t, X(b.x1) - X(b.x0), H - M.t - M.b); g.globalAlpha = 1; }
+    for (const h of o.hlines || []) { g.strokeStyle = h.color; g.setLineDash([5, 4]); g.lineWidth = 1; g.beginPath(); g.moveTo(M.l, Y(h.y) + .5); g.lineTo(W - M.r, Y(h.y) + .5); g.stroke(); g.setLineDash([]); if (h.label) { g.fillStyle = h.color; g.font = `11px ${mono}`; g.textAlign = "right"; g.textBaseline = h.below ? "top" : "bottom"; g.fillText(h.label, W - M.r - 4, Y(h.y) + (h.below ? 3 : -3)); } }
+    for (const s of o.series || []) {
+      g.strokeStyle = s.color; g.fillStyle = s.color; g.globalAlpha = s.alpha ?? 1; g.lineWidth = s.w || 1.6;
+      g.setLineDash(s.dash ? [5, 4] : []);
+      if (s.points) { for (let i = 0; i < s.x.length; i++) { g.beginPath(); g.arc(X(s.x[i]), Y(s.y[i]), s.r || 3.5, 0, 7); g.fill(); } }
+      else {
+        g.beginPath(); g.lineJoin = "round";
+        for (let i = 0; i < s.x.length; i++) { const px = X(s.x[i]), py = Y(s.y[i]); i ? g.lineTo(px, py) : g.moveTo(px, py); }
+        if (s.fillTo != null) { g.lineTo(X(s.x[s.x.length - 1]), Y(s.fillTo)); g.lineTo(X(s.x[0]), Y(s.fillTo)); g.closePath(); g.globalAlpha = 0.12; g.fill(); g.globalAlpha = s.alpha ?? 1; g.beginPath(); for (let i = 0; i < s.x.length; i++) { const px = X(s.x[i]), py = Y(s.y[i]); i ? g.lineTo(px, py) : g.moveTo(px, py); } }
+        g.stroke();
+      }
+    }
+    g.setLineDash([]); g.globalAlpha = 1;
+    for (const v of o.vlines || []) { g.strokeStyle = v.color || cMuted; g.setLineDash(v.dash ? [4, 4] : []); g.lineWidth = 1; g.beginPath(); g.moveTo(X(v.x) + .5, M.t); g.lineTo(X(v.x) + .5, H - M.b); g.stroke(); }
+    g.setLineDash([]);
+    for (const l of o.labels || []) { g.fillStyle = l.color || cMuted; g.font = `11px ${mono}`; g.textAlign = l.align || "left"; g.textBaseline = "middle"; g.fillText(l.text, X(l.x) + (l.dx || 0), Y(l.y) + (l.dy || 0)); }
+    g.restore();
+  }
+  function fmtTick(v, step) { const d = step < 0.01 ? 3 : step < 0.1 ? 2 : step < 1 ? 1 : 0; const s = Math.abs(v) < 1e-9 ? "0" : v.toFixed(d); return s.replace("-", "−"); }
+
+  const $ = id => document.getElementById(id);
+  function bindRange(id, outFmt, cb) {
+    const el = $(id), out = $(id + "Out");
+    const upd = () => { out.textContent = outFmt(+el.value); };
+    el.addEventListener("input", () => { upd(); cb(); });
+    upd(); return el;
+  }
+  const fT = v => v.toFixed(1) + " °C", fmV = v => v + " mV";
+
+  // ================= 1. membrane AP =================
+  const apDep = bindRange("apDep", fmV, drawAP), apT = bindRange("apT", fT, () => { apThrCache = null; drawAP(); });
+  $("apPaper").addEventListener("change", drawAP);
+  let apThrCache = null;
+  function drawAP() {
+    const T = +apT.value, f = phi(T), tmax = Math.min(20, Math.max(4, 20 / f));
+    const sel = simMembrane({ T, tmax, dep: +apDep.value });
+    if (apThrCache == null || apThrCache.T !== T) apThrCache = { T, v: bisect(0, 100, d => simMembrane({ T, tmax, dep: d, record: false }).minV < -50) };
+    const series = [];
+    if ($("apPaper").checked) for (const d of [6, 7, 15, 90]) { const r = simMembrane({ T, tmax, dep: d }); series.push({ x: r.t, y: r.V.map(D), color: tok("--muted"), dash: true, w: 1.2 }); }
+    series.push({ x: sel.t, y: sel.V.map(D), color: tok("--ink"), w: 2 });
+    plot($("apV"), { x: [0, tmax], y: vRange(), xlabel: "t (ms)", ylabel: vLabel(), series });
+    plot($("apG"), { x: [0, tmax], y: [0, 40], xlabel: "t (ms)", ylabel: "g (mS/cm²)", series: [
+      { x: sel.t, y: sel.gNa, color: tok("--na"), w: 1.8 }, { x: sel.t, y: sel.gK, color: tok("--k"), w: 1.8 }] });
+    plot($("apX"), { x: [0, tmax], y: [0, 1], ystep: 0.5, xlabel: "t (ms)", ylabel: "gate", series: [
+      { x: sel.t, y: sel.m, color: tok("--na"), w: 1.6 }, { x: sel.t, y: sel.h, color: tok("--na"), dash: true, w: 1.6 }, { x: sel.t, y: sel.n, color: tok("--k"), w: 1.6 }] });
+    const thr = apThrCache.v;
+    $("apThr").textContent = thr == null ? "none up to 100 mV" : thr.toFixed(2) + " mV at " + T.toFixed(1) + " °C";
+    $("apPeak").textContent = sel.minV < -50 ? fmt(D(sel.minV)) + " mV (" + (conv === "1952" ? "−V" : "Vm") + ")" : "no spike";
+    const ok = T === 6.3 && thr != null && thr > 6 && thr < 7;
+    $("apPill").innerHTML = T === 6.3 ? (ok ? '<span class="pill ok">matches Paper V: 6 &lt; threshold &lt; 7 mV</span>' : '<span class="pill na">differs from Paper V</span>') : '<span class="pill na">set 6.3 °C to compare with Paper V</span>';
+  }
+
+  // ================= 2. excitation protocols =================
+  const excTexts = {
+    paired: "Two identical shocks are given at an interval. Soon after a spike, sodium channels are still inactivated (h is low) and potassium conductance is still high, so a second shock fails or gives a smaller spike. That is the refractory period.",
+    anode: "The membrane is held hyperpolarised until the gates reach steady state, then released. Hyperpolarisation removes sodium inactivation (h rises) and lowers potassium conductance, so on release the membrane can overshoot into a spike with no depolarising stimulus. That is anode-break excitation.",
+    rep: "A constant depolarising current is applied from t = 10 ms. Above a critical current the model fires repetitively. The f–I curve shows the frequency at each current; the jump from zero to a non-zero rate is the abrupt onset typical of this model."
+  };
+  const exProto = $("excProto");
+  const exShock = bindRange("exShock", fmV, drawExc), exGap = bindRange("exGap", v => v.toFixed(2) + " ms", drawExc);
+  const exHyp = bindRange("exHyp", fmV, drawExc), exI = bindRange("exI", v => v.toFixed(1) + " µA/cm²", drawExc);
+  const exT = bindRange("exT", fT, () => { fiCache = null; drawExc(); });
+  exProto.addEventListener("change", drawExc);
+  let fiCache = null;
+  function drawExc() {
+    const proto = exProto.value, T = +exT.value, f = phi(T);
+    document.querySelectorAll("[data-proto]").forEach(el => { el.hidden = el.dataset.proto !== proto; });
+    $("excText").textContent = excTexts[proto];
+    const res = [];
+    if (proto === "paired") {
+      const A = +exShock.value, gap = +exGap.value, tmax = Math.max(gap + 15 / Math.max(1, f ** 0.7), 20 / f);
+      const r = simMembrane({ T, tmax, shocks: [{ t: 0, dep: A }, { t: gap, dep: A }] });
+      plot($("exV"), { x: [0, tmax], y: vRange(), xlabel: "t (ms)", ylabel: vLabel(), series: [{ x: r.t, y: r.V.map(D), color: tok("--ink"), w: 2 }], vlines: [{ x: 0, dash: true }, { x: gap, dash: true }] });
+      plot($("exS"), { x: [0, tmax], y: [0, 1], ystep: 0.5, xlabel: "t (ms)", ylabel: "h", series: [{ x: r.t, y: r.h, color: tok("--na"), w: 1.8 }], vlines: [{ x: 0, dash: true }, { x: gap, dash: true }] });
+      $("exSTitle").textContent = "Sodium inactivation gate h (dashed lines: shocks)";
+      let p2 = 0; for (let i = 0; i < r.t.length; i++) if (r.t[i] > gap) p2 = Math.min(p2, r.V[i]);
+      let p1 = 0; for (let i = 0; i < r.t.length; i++) if (r.t[i] <= gap) p1 = Math.min(p1, r.V[i]);
+      const minGap = bisect(0.05, 40, gp => simMembrane({ T, tmax: gp + 20 / f, shocks: [{ t: 0, dep: A }, { t: gp, dep: A }], record: false }).spikes.length >= 2, 0.01);
+      res.push(["Spikes", String(r.spikes.length)]);
+      res.push(["Second response", r.spikes.length >= 2 ? (100 * p2 / p1).toFixed(0) + "% of first peak" : "no second spike"]);
+      res.push(["Shortest interval for a 2nd spike", minGap == null ? "> 40 ms" : minGap.toFixed(2) + " ms"]);
+    } else if (proto === "anode") {
+      const H = +exHyp.value, tmax = Math.min(30, Math.max(6, 25 / f));
+      const r = simMembrane({ T, tmax, init: steady(H, f) });
+      plot($("exV"), { x: [0, tmax], y: conv === "1952" ? [-70, 120] : [-135, 55], xlabel: "t (ms) after release", ylabel: vLabel(), series: [{ x: r.t, y: r.V.map(D), color: tok("--ink"), w: 2 }] });
+      plot($("exS"), { x: [0, tmax], y: [0, 1], ystep: 0.5, xlabel: "t (ms) after release", ylabel: "gate", series: [
+        { x: r.t, y: r.m, color: tok("--na"), w: 1.6 }, { x: r.t, y: r.h, color: tok("--na"), dash: true, w: 1.6 }, { x: r.t, y: r.n, color: tok("--k"), w: 1.6 }] });
+      $("exSTitle").textContent = "Gates m (solid red), h (dashed red), n (blue)";
+      const thr = bisect(0, 80, hh => simMembrane({ T, tmax: 30, init: steady(hh, f), record: false }).spikes.length > 0);
+      res.push(["Protocol", "held " + H + " mV hyperpolarised to steady state, then released"]);
+      res.push(["h before release", steady(H, f)[2].toFixed(3) + " (rest " + steady(0, f)[2].toFixed(3) + ")"]);
+      res.push(["Result", r.spikes.length ? "anode-break spike" : "no spike"]);
+      res.push(["Smallest hyperpolarisation that fires", thr == null ? "none up to 80 mV" : thr.toFixed(2) + " mV"]);
+    } else {
+      const Iv = +exI.value, tmax = 150, on = 10;
+      const r = simMembrane({ T, tmax, I: t => t >= on ? Iv : 0 });
+      plot($("exV"), { x: [0, tmax], y: vRange(), xlabel: "t (ms)", ylabel: vLabel(), series: [{ x: r.t, y: r.V.map(D), color: tok("--ink"), w: 1.6 }], vlines: [{ x: on, dash: true }] });
+      if (!fiCache || fiCache.T !== T) {
+        const xs = [], ys = [];
+        for (let I = 0; I <= 60; I += 2) { const q = simMembrane({ T, tmax: 300, I: t => t >= on ? I : 0, record: false }); xs.push(I); ys.push(rate(q.spikes)); }
+        fiCache = { T, xs, ys };
+      }
+      const fr = rate(r.spikes);
+      const ymax = Math.max(20, Math.ceil(Math.max(...fiCache.ys) / 20) * 20 + 10);
+      plot($("exS"), { x: [0, 60], y: [0, ymax], xlabel: "applied current (µA/cm²)", ylabel: "rate (Hz)", series: [
+        { x: fiCache.xs, y: fiCache.ys, color: tok("--accent"), w: 1.8 }, { x: [Iv], y: [fr], color: tok("--ink"), points: true, r: 4.5 }] });
+      $("exSTitle").textContent = "f–I curve (rate over the last 200 ms of a 300 ms step)";
+      let rheo = null; for (let i = 0; i < fiCache.xs.length; i++) if (fiCache.ys[i] > 0) { rheo = fiCache.xs[i]; break; }
+      res.push(["Spikes in 140 ms", String(r.spikes.filter(t => t >= on).length)]);
+      res.push(["Steady rate", fr > 0 ? fr.toFixed(1) + " Hz" : "no repetitive firing"]);
+      res.push(["Lowest current with sustained firing", rheo == null ? "> 60 µA/cm²" : "≈ " + rheo + " µA/cm² (2 µA/cm² grid)"]);
+    }
+    $("excResult").innerHTML = res.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
+  }
+  function rate(spk) { const late = spk.filter(t => t >= 100); if (late.length < 2) return 0; return 1000 * (late.length - 1) / (late[late.length - 1] - late[0]); }
+
+  // ================= 3. voltage clamp =================
+  function clampTrace(dep, T, tmax, n = 400) {
+    const f = phi(T), [, m0, h0, n0] = steady(0, f), V = -dep, [am, bm, ah, bh, an, bn] = rates(V, f);
+    const mi = am / (am + bm), tm = 1 / (am + bm), hi = ah / (ah + bh), th = 1 / (ah + bh), ni = an / (an + bn), tn = 1 / (an + bn);
+    const o = { t: [], gNa: [], gK: [], INa: [], IK: [], Ii: [] };
+    for (let i = 0; i <= n; i++) {
+      const t = i / n * tmax;
+      const m = mi - (mi - m0) * Math.exp(-t / tm), h = hi - (hi - h0) * Math.exp(-t / th), nn = ni - (ni - n0) * Math.exp(-t / tn);
+      const gNa = P.gNa * m ** 3 * h, gK = P.gK * nn ** 4;
+      o.t.push(t); o.gNa.push(gNa); o.gK.push(gK);
+      o.INa.push(gNa * (V - P.ENa)); o.IK.push(gK * (V - P.EK)); o.Ii.push(gNa * (V - P.ENa) + gK * (V - P.EK) + P.gL * (V - P.EL));
+    }
+    return o;
+  }
+  const vcDep = bindRange("vcDep", fmV, drawVC), vcT = bindRange("vcT", fT, drawVC);
+  $("vcFam").addEventListener("change", drawVC);
+  function drawVC() {
+    const dep = +vcDep.value, T = +vcT.value, f = phi(T), tmax = Math.min(12, Math.max(3, 12 / f));
+    const series = [];
+    if ($("vcFam").checked) for (let d = 10; d <= 130; d += 20) { const r = clampTrace(d, T, tmax); series.push({ x: r.t, y: r.gNa, color: tok("--na"), alpha: 0.28, w: 1.2 }, { x: r.t, y: r.gK, color: tok("--k"), alpha: 0.28, w: 1.2 }); }
+    const r = clampTrace(dep, T, tmax);
+    series.push({ x: r.t, y: r.gNa, color: tok("--na"), w: 2.2 }, { x: r.t, y: r.gK, color: tok("--k"), w: 2.2 });
+    plot($("vcG"), { x: [0, tmax], y: [0, 45], xlabel: "t (ms) after step", ylabel: "g (mS/cm²)", series });
+    const dNa = r.INa.map(DI), dK = r.IK.map(DI), dI = r.Ii.map(DI);
+    const all = dNa.concat(dK, dI), lo = Math.min(-100, ...all), hi = Math.max(100, ...all);
+    const s = niceStep(hi - lo, 4);
+    plot($("vcI"), { x: [0, tmax], y: [Math.floor(lo / s) * s, Math.ceil(hi / s) * s], xlabel: "t (ms) after step", ylabel: iLabel(), series: [
+      { x: r.t, y: dNa, color: tok("--na"), w: 1.8 }, { x: r.t, y: dK, color: tok("--k"), w: 1.8 }, { x: r.t, y: dI, color: tok("--ink"), w: 1.4, dash: true }] });
+    let pk = 0, tpk = 0; r.gNa.forEach((g, i) => { if (g > pk) { pk = g; tpk = r.t[i]; } });
+    const [am, bm, ah, bh, an, bn] = rates(-dep, f);
+    $("vcResult").innerHTML = [
+      ["Step to", (conv === "1952" ? "V = " + fmt(-dep, 0) + " mV" : "Vm = " + fmt(-65 + dep, 0) + " mV")],
+      ["Peak g<sub>Na</sub>", pk.toFixed(2) + " mS/cm² at " + tpk.toFixed(2) + " ms"],
+      ["g<sub>K</sub> at " + tmax.toFixed(1) + " ms", r.gK[r.gK.length - 1].toFixed(2) + " mS/cm²"],
+      ["τ<sub>m</sub> · τ<sub>h</sub> · τ<sub>n</sub>", (1 / (am + bm)).toFixed(3) + " · " + (1 / (ah + bh)).toFixed(2) + " · " + (1 / (an + bn)).toFixed(2) + " ms"],
+      ["Sodium current reverses at", conv === "1952" ? "115 mV depolarisation (V<sub>Na</sub>)" : "Vm = +50 mV (V<sub>Na</sub>)"]
+    ].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
+  }
+
+  // ================= 4. inactivation =================
+  const inPre = bindRange("inPre", v => v + " ms", drawIn), inTest = bindRange("inTest", fmV, drawIn), inT = bindRange("inT", fT, drawIn);
+  function testPeak(Vp, pre, testDep, f) {
+    const [, m0, h0, n0] = steady(0, f);
+    let [am, bm, ah, bh] = rates(Vp, f);
+    let mi = am / (am + bm), hi = ah / (ah + bh);
+    const m1 = mi - (mi - m0) * Math.exp(-pre * (am + bm)), h1 = hi - (hi - h0) * Math.exp(-pre * (ah + bh));
+    const Vt = -testDep;[am, bm, ah, bh] = rates(Vt, f);
+    mi = am / (am + bm); hi = ah / (ah + bh);
+    const tm = 1 / (am + bm), th = 1 / (ah + bh), tmax = 6 * Math.max(tm, 0.5) + 2 * th;
+    const tr = { t: [], I: [] }; let pk = 0;
+    for (let i = 0; i <= 300; i++) {
+      const t = i / 300 * tmax, m = mi - (mi - m1) * Math.exp(-t / tm), h = hi - (hi - h1) * Math.exp(-t / th);
+      const I = P.gNa * m ** 3 * h * (Vt - P.ENa); tr.t.push(t); tr.I.push(I); if (Math.abs(I) > Math.abs(pk)) pk = I;
+    }
+    return { pk, tr };
+  }
+  function drawIn() {
+    const pre = +inPre.value, testDep = +inTest.value, T = +inT.value, f = phi(T);
+    const cx = [], cy = [];
+    for (let V = 45; V >= -45; V -= 0.5) { const [, , h] = steady(V, f); cx.push(D(V)); cy.push(h); }
+    const px = [], pv = [];
+    for (let V = 45; V >= -45; V -= 5) { px.push(V); pv.push(testPeak(V, pre, testDep, f).pk); }
+    const ref = pv.reduce((a, b) => Math.abs(b) > Math.abs(a) ? b : a, 0), py = pv.map(v => v / ref);
+    const xr = conv === "1952" ? [-50, 50] : [-115, -15];
+    plot($("inH"), { x: xr, y: [0, 1.05], ystep: 0.2, xlabel: (conv === "1952" ? "conditioning −V (mV)" : "conditioning Vm (mV)"), ylabel: "relative peak INa", series: [
+      { x: cx, y: cy, color: tok("--na"), w: 2 }, { x: px.map(D), y: py, color: tok("--ink"), points: true, r: 3.8 }] });
+    const fam = [20, 5, 0, -5, -10], series = [];
+    const shades = [1, 0.8, 0.6, 0.42, 0.26];
+    let tmx = 0, big = 0;
+    const trs = fam.map(V => { const tr = testPeak(V, pre, testDep, f).tr; return { t: tr.t, I: tr.I.map(DI) }; });
+    trs.forEach((tr, i) => { tmx = Math.max(tmx, tr.t[tr.t.length - 1]); for (const v of tr.I) if (Math.abs(v) > Math.abs(big)) big = v; series.push({ x: tr.t, y: tr.I, color: tok("--na"), alpha: shades[i], w: 1.7 }); });
+    const sg = big >= 0 ? 1 : -1;
+    const labels = fam.map((V, i) => { let pk = 0, pt = 0; trs[i].I.forEach((v, j) => { if (Math.abs(v) > Math.abs(pk)) { pk = v; pt = trs[i].t[j]; } }); return { x: pt, y: pk, text: (conv === "1952" ? "V=" + fmt(V, 0) : "Vm=" + fmt(-65 - V, 0)), dx: 6, dy: sg * -2, color: tok("--muted") }; });
+    const s = niceStep(Math.abs(big), 4);
+    const yr = sg > 0 ? [-s, Math.ceil(big / s) * s + s] : [Math.floor(big / s) * s - s, s];
+    plot($("inI"), { x: [0, tmx], y: yr, xlabel: "t (ms) into test step", ylabel: conv === "1952" ? "INa (inward +)" : "INa (outward +)", series, labels });
+    const half = (xs, ys) => { for (let i = 1; i < ys.length; i++) if ((ys[i - 1] - 0.5) * (ys[i] - 0.5) <= 0) { const t = (0.5 - ys[i - 1]) / (ys[i] - ys[i - 1]); return xs[i - 1] + t * (xs[i] - xs[i - 1]); } return null; };
+    const hAn = half(cx, cy), hSim = half(px.map(D), py), [, , hr] = steady(0, f);
+    $("inResult").innerHTML = [
+      ["h∞ = ½, rate equations", hAn == null ? "–" : (conv === "1952" ? "−V = " : "Vm = ") + fmt(hAn) + " mV"],
+      ["h∞ = ½, pulse protocol", hSim == null ? "–" : (conv === "1952" ? "−V = " : "Vm = ") + fmt(hSim) + " mV"],
+      ["h at rest", hr.toFixed(3) + " (about 40% of channels inactivated)"],
+      ["τ<sub>h</sub> at rest", (1 / (rates(0, f)[2] + rates(0, f)[3])).toFixed(2) + " ms"]
+    ].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
+  }
+
+  // ================= 5. propagation =================
+  const prT = bindRange("prT", fT, schedProp), prA = bindRange("prA", v => v + " µm", schedProp), prR = bindRange("prR", v => v.toFixed(1) + " Ω cm", schedProp);
+  const prScrub = $("prScrub"), prPlay = $("prPlay");
+  let PR = null, prInit = false, prTimer = null, playing = false, playStart = 0, playFrom = 0;
+  function schedProp() { $("prBusy").textContent = "computing…"; clearTimeout(prTimer); prTimer = setTimeout(() => { runProp(); $("prBusy").textContent = ""; }, 60); }
+  function runProp() {
+    const T = +prT.value, f = phi(T), a = +prA.value * 1e-4, R2 = +prR.value;
+    const K = 1000 * a / (2 * R2);           // µA/cm² per mV/cm²  (D = K / C_M, cm²/ms)
+    const dx = 0.025, Lc = 6, N = Math.round(Lc / dx) + 1;
+    const dt = Math.min(0.2 * dx * dx / K * P.C, 0.01 / f);
+    // tabulate gate updates every 0.01 mV
+    const VMIN = -150, VMAX = 100, RES = 0.01, NT = Math.round((VMAX - VMIN) / RES) + 1;
+    const tab = new Float64Array(NT * 6);
+    for (let i = 0; i < NT; i++) {
+      const V = VMIN + i * RES, [am, bm, ah, bh, an, bn] = rates(V, f);
+      const sm = am + bm, sh = ah + bh, sn = an + bn;
+      tab[i * 6] = am / sm; tab[i * 6 + 1] = Math.exp(-dt * sm);
+      tab[i * 6 + 2] = ah / sh; tab[i * 6 + 3] = Math.exp(-dt * sh);
+      tab[i * 6 + 4] = an / sn; tab[i * 6 + 5] = Math.exp(-dt * sn);
+    }
+    const r0 = steady(0, f);
+    const V = new Float64Array(N), Vn = new Float64Array(N), m = new Float64Array(N).fill(r0[1]), h = new Float64Array(N).fill(r0[2]), n = new Float64Array(N).fill(r0[3]);
+    const cross = new Float64Array(N).fill(NaN);
+    const snapEvery = 0.025, snaps = [], tr1 = { t: [], V: [] }, tr2 = { t: [], V: [] };
+    const i1 = Math.round(2 / dx), i2 = Math.round(4 / dx), stimN = Math.round(0.2 / dx);
+    const inv = 1 / (dx * dx);
+    let t = 0, nextSnap = 0, tEnd = 40;
+    while (t < tEnd) {
+      for (let i = 0; i < N; i++) {
+        const l = V[i > 0 ? i - 1 : 1], r = V[i < N - 1 ? i + 1 : N - 2];
+        const v = V[i], m3 = m[i] * m[i] * m[i], n4 = n[i] * n[i] * n[i] * n[i];
+        const Ii = P.gNa * m3 * h[i] * (v - P.ENa) + P.gK * n4 * (v - P.EK) + P.gL * (v - P.EL);
+        const Is = (t < 0.1 && i < stimN) ? -3000 : 0;
+        Vn[i] = v + dt * (K * (l - 2 * v + r) * inv - Ii + Is) / P.C;
+      }
+      for (let i = 0; i < N; i++) {
+        const v = V[i];
+        let x = (v - VMIN) / RES; if (x < 0) x = 0; if (x > NT - 1.001) x = NT - 1.001;
+        const k = x | 0, w = x - k, A = k * 6, B = A + 6;
+        const mi = tab[A] + w * (tab[B] - tab[A]), me = tab[A + 1] + w * (tab[B + 1] - tab[A + 1]);
+        const hi = tab[A + 2] + w * (tab[B + 2] - tab[A + 2]), he = tab[A + 3] + w * (tab[B + 3] - tab[A + 3]);
+        const ni = tab[A + 4] + w * (tab[B + 4] - tab[A + 4]), ne = tab[A + 5] + w * (tab[B + 5] - tab[A + 5]);
+        m[i] = mi + (m[i] - mi) * me; h[i] = hi + (h[i] - hi) * he; n[i] = ni + (n[i] - ni) * ne;
+        V[i] = Vn[i];
+        if (isNaN(cross[i]) && V[i] < -50) cross[i] = t + dt;
+      }
+      t += dt;
+      if (t >= nextSnap) { snaps.push({ t, V: Float32Array.from(V) }); tr1.t.push(t); tr1.V.push(V[i1]); tr2.t.push(t); tr2.V.push(V[i2]); nextSnap += snapEvery; }
+      if (!isNaN(cross[N - 1]) && tEnd === 40) tEnd = t + 3 / Math.max(1, f ** 0.5);
+    }
+    // velocity: least squares of crossing time vs x over 1.5–4.5 cm
+    let sx = 0, sy = 0, sxx = 0, sxy = 0, c = 0;
+    for (let i = Math.round(1.5 / dx); i <= Math.round(4.5 / dx); i++) if (!isNaN(cross[i])) { const x = i * dx, y = cross[i]; sx += x; sy += y; sxx += x * x; sxy += x * y; c++; }
+    const slope = c > 5 ? (c * sxy - sx * sy) / (c * sxx - sx * sx) : NaN;   // ms per cm
+    const vel = slope > 0 ? 10 / slope : NaN;                                   // m/s
+    PR = { snaps, tr1, tr2, vel, dx, N, tEnd: snaps[snaps.length - 1].t, T, a: +prA.value, R2 };
+    $("prVel").textContent = isNaN(vel) ? "no propagation" : vel.toFixed(2) + " m/s";
+    const atPaper = Math.abs(T - 18.5) < 1e-6 && +prA.value === 238 && Math.abs(R2 - 35.4) < 1e-6;
+    $("prPill").innerHTML = atPaper ? (Math.abs(vel - 18.8) < 0.3 ? `<span class="pill ok">within ${(Math.abs(vel - 18.8) / 18.8 * 100).toFixed(1)}% of Paper V’s 18.8 m/s</span>` : '<span class="pill na">differs from Paper V</span>') : '<span class="pill na">reset to 18.5 °C, 238 µm, 35.4 Ω cm to compare</span>';
+    if (!prInit) { prInit = true; prScrub.value = Math.round(Math.min(1, 1.7 / PR.tEnd) * 1000); }
+    drawProp(+prScrub.value / 1000 * PR.tEnd);
+  }
+  function drawProp(tNow) {
+    if (!PR) return;
+    let k = Math.min(PR.snaps.length - 1, Math.max(0, Math.round(tNow / 0.025)));
+    const s = PR.snaps[k], xs = Array.from({ length: PR.N }, (_, i) => i * PR.dx);
+    $("prScrubOut").textContent = s.t.toFixed(2) + " ms";
+    plot($("prX"), { x: [0, 6], y: vRange(), xlabel: "distance along axon (cm)", ylabel: vLabel(), series: [{ x: xs, y: Array.from(s.V, D), color: tok("--accent"), w: 2.2, fillTo: vRange()[0] }], vlines: [{ x: 2, dash: true }, { x: 4, dash: true }] });
+    plot($("prTt"), { x: [0, PR.tEnd], y: vRange(), xlabel: "t (ms)", ylabel: vLabel(), series: [
+      { x: PR.tr1.t, y: PR.tr1.V.map(D), color: tok("--ink"), w: 1.8 }, { x: PR.tr2.t, y: PR.tr2.V.map(D), color: tok("--accent"), w: 1.8 }], vlines: [{ x: s.t, color: tok("--muted") }] });
+  }
+  prScrub.addEventListener("input", () => { playing = false; prPlay.textContent = "Play"; drawProp(+prScrub.value / 1000 * PR.tEnd); });
+  prPlay.addEventListener("click", () => {
+    playing = !playing; prPlay.textContent = playing ? "Pause" : "Play";
+    if (playing) { if (+prScrub.value >= 1000) prScrub.value = 0; playFrom = +prScrub.value; playStart = performance.now(); requestAnimationFrame(tick); }
+  });
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function tick(now) {
+    if (!playing) return;
+    const dur = reduce ? 1500 : 6000;   // wall-clock ms for the full run
+    const v = Math.min(1000, playFrom + (now - playStart) / dur * 1000);
+    prScrub.value = Math.round(v); drawProp(v / 1000 * PR.tEnd);
+    if (v >= 1000) { playing = false; prPlay.textContent = "Replay"; return; }
+    requestAnimationFrame(tick);
+  }
+
+  // ================= synthesis: anatomy of one spike =================
+  const W_T = 6.3, W_DEP = 15, W_TMAX = 25;
+  const WS = (() => {
+    const r = simMembrane({ T: W_T, tmax: W_TMAX, dep: W_DEP });
+    r.INa = []; r.IK = []; r.IL = []; r.dV = [];
+    for (let i = 0; i < r.t.length; i++) { const [a, b, c] = ionic(r.V[i], r.m[i], r.h[i], r.n[i]); r.INa.push(a); r.IK.push(b); r.IL.push(c); r.dV.push(-(a + b + c) / P.C); }
+    let iUp = r.dV.findIndex(d => d < -5); if (iUp < 0) iUp = 1;
+    let iPk = 0; r.V.forEach((v, i) => { if (v < r.V[iPk]) iPk = i; });
+    let iRet = r.V.findIndex((v, i) => i > iPk && v > 0); if (iRet < 0) iRet = r.V.length - 1;
+    let iUn = iRet; for (let i = iRet; i < r.V.length; i++) if (r.V[i] > r.V[iUn]) iUn = i;
+    let iX = r.gK.findIndex((g, i) => i > iUp && g > r.gNa[i]);
+    const tt = i => r.t[i];
+    const pkW = 0.12;
+    r.phases = [
+      { key: "lat", name: "Latency", t0: 0, t1: tt(iUp) },
+      { key: "up", name: "Upstroke", t0: tt(iUp), t1: tt(iPk) - pkW },
+      { key: "pk", name: "Peak", t0: tt(iPk) - pkW, t1: tt(iPk) + pkW },
+      { key: "re", name: "Repolarisation", t0: tt(iPk) + pkW, t1: tt(iRet) },
+      { key: "un", name: "Undershoot", t0: tt(iRet), t1: Math.min(W_TMAX, tt(iUn) + (tt(iUn) - tt(iRet))) },
+      { key: "rec", name: "Recovery", t0: Math.min(W_TMAX, tt(iUn) + (tt(iUn) - tt(iRet))), t1: W_TMAX }
+    ];
+    r.ev = { iUp, iPk, iRet, iUn, iX };
+    return r;
+  })();
+  const wT = $("wT"), wPlay = $("wPlay");
+  let wPlaying = false, wStart = 0, wFrom = 0, wTestTimer = null;
+  WS.phases.forEach(ph => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = ph.name; b.dataset.key = ph.key;
+    b.addEventListener("click", () => { wPlaying = false; wPlay.textContent = "Play"; const mid = ph.key === "pk" ? WS.t[WS.ev.iPk] : (ph.t0 + ph.t1) / 2; wT.value = Math.round(mid / W_TMAX * 1000); drawWhole(); });
+    $("wPhases").appendChild(b);
+  });
+  const sNum = (x, d = 1) => (x < 0 ? "−" : "") + Math.abs(x).toFixed(d);
+  function wPhaseText(ph, i) {
+    const r = WS, V = r.V[i], dv = D(V), u = conv === "1952" ? "−V" : "Vm";
+    const vNa = conv === "1952" ? "115 mV" : "+50 mV", vK = conv === "1952" ? "−12 mV" : "−77 mV";
+    const tauh = 1 / (rates(V, phi(W_T))[2] + rates(V, phi(W_T))[3]);
+    switch (ph.key) {
+      case "lat": return ["The shock sets it up", `The shock has moved the membrane ${W_DEP} mV from rest. m responds within a fraction of a millisecond (τm ≈ ${(1 / (rates(V, 1)[0] + rates(V, 1)[1])).toFixed(2)} ms), while h and n take milliseconds to change. For a moment, extra sodium conductance is the only thing that changes. If the inward I<sub>Na</sub> it adds beats the outward K⁺ and leak currents, V keeps rising. That race is the threshold: 6 mV loses, 7 mV wins.`];
+      case "up": return ["Positive feedback", `Depolarisation opens more m gates, m opens more sodium conductance, and the inward current depolarises further. g<sub>Na</sub> is ${r.gNa[i].toFixed(1)} mS/cm² against g<sub>K</sub> ${r.gK[i].toFixed(1)}. V is rising at ${Math.abs(r.dV[i]).toFixed(0)} mV/ms, the fastest part of the spike. This is the regenerative step that makes the response all-or-none.`];
+      case "pk": return ["Why the peak stops short of V<sub>Na</sub>", `${u} peaks at ${sNum(D(r.V[r.ev.iPk]))} mV, short of V<sub>Na</sub> (${vNa}). Two slower processes have caught up: inactivation has pulled h down to ${r.h[i].toFixed(2)}, and n has risen to ${r.n[i].toFixed(2)}, switching on the outward K⁺ current. At the peak dV/dt = 0, so inward and outward currents balance exactly.`];
+      case "re": return ["Two brakes act together", `Sodium conductance is collapsing because h is falling, not because m is closing. Potassium conductance ${r.gK[i] > r.gNa[i] ? "is now the larger of the two" : "is catching up"} (g<sub>K</sub> ${r.gK[i].toFixed(1)} vs g<sub>Na</sub> ${r.gNa[i].toFixed(1)} mS/cm²). Because the K⁺ driving force is larger here, the outward I<sub>K</sub> already outweighs I<sub>Na</sub> and drives V back toward rest. Both matter: inactivation shuts off the inward current, and K⁺ activation adds an outward one.`];
+      case "un": return ["Overshooting rest toward V<sub>K</sub>", `V passes rest and heads toward V<sub>K</sub> (${vK}) because g<sub>K</sub> (${r.gK[i].toFixed(2)} mS/cm²) is still well above its resting value (${(P.gK * steady(0, 1)[3] ** 4).toFixed(2)}). n closes slowly. Meanwhile h is recovering with τh ≈ ${tauh.toFixed(1)} ms. Low h plus high g<sub>K</sub> is what makes the membrane refractory.`];
+      default: return ["Back to rest, slowly", `n and h relax back to their resting values (${steady(0, 1)[3].toFixed(3)} and ${steady(0, 1)[2].toFixed(3)}). Until they get there, the threshold is raised. That is the relative refractory period, set by the same rate equations fitted from the clamp data. Now h = ${r.h[i].toFixed(3)} and n = ${r.n[i].toFixed(3)}.`];
+    }
+  }
+  function wRefractoryTest(i) {
+    const r = WS, V = r.V[i];
+    if (V < -20) return `A second ${W_DEP} mV shock now: <b>the membrane is already firing</b>.`;
+    const q = simMembrane({ T: W_T, tmax: 15, init: [V - W_DEP, r.m[i], r.h[i], r.n[i]], record: false });
+    const fires = q.minV < -50;
+    return `A second ${W_DEP} mV shock at this moment would <b>${fires ? "fire a new spike" : "fail to fire"}</b>${fires ? "" : " (refractory)"}. This is computed by restarting the equations from the present values of V, m, h and n.`;
+  }
+  function drawWhole() {
+    const r = WS, t = +wT.value / 1000 * W_TMAX;
+    let i = Math.min(r.t.length - 1, Math.max(0, Math.round(t / (r.t[1] - r.t[0]))));
+    const ph = r.phases.find(p => t >= p.t0 && t < p.t1) || r.phases[r.phases.length - 1];
+    const band = [{ x0: ph.t0, x1: ph.t1, color: tok("--accent"), alpha: 0.1 }], cur = [{ x: r.t[i], color: tok("--ink") }];
+    const vr = vRange(), eNa = D(P.ENa), eK = D(P.EK);
+    plot($("wV"), { x: [0, W_TMAX], y: [Math.min(vr[0], eK - 5), Math.max(vr[1], eNa + 5)], xlabel: "", ylabel: vLabel(), bands: band, vlines: cur,
+      hlines: [{ y: eNa, color: tok("--na"), label: "VNa", below: true }, { y: eK, color: tok("--k"), label: "VK" }],
+      series: [{ x: r.t, y: r.V.map(D), color: tok("--ink"), w: 2 }, { x: [r.t[i]], y: [D(r.V[i])], color: tok("--ink"), points: true, r: 4.5 }] });
+    plot($("wG"), { x: [0, W_TMAX], y: [0, 40], xlabel: "", ylabel: "g (mS/cm²)", bands: band, vlines: cur,
+      series: [{ x: r.t, y: r.gNa, color: tok("--na"), w: 1.8 }, { x: r.t, y: r.gK, color: tok("--k"), w: 1.8 }],
+      labels: [{ x: r.t[r.ev.iPk], y: Math.max(...r.gNa), text: "gNa", dx: 8, color: tok("--na") }, { x: r.t[r.ev.iRet], y: r.gK[r.ev.iRet], text: "gK", dx: 6, dy: -10, color: tok("--k") }] });
+    const dNa = r.INa.map(DI), dK = r.IK.map(DI), dL = r.IL.map(DI);
+    const all = dNa.concat(dK), lo = Math.min(...all), hi = Math.max(...all), s = niceStep(hi - lo, 4);
+    plot($("wI"), { x: [0, W_TMAX], y: [Math.floor(lo / s) * s, Math.ceil(hi / s) * s], xlabel: "t (ms)", ylabel: iLabel(), bands: band, vlines: cur,
+      series: [{ x: r.t, y: dNa, color: tok("--na"), w: 1.8 }, { x: r.t, y: dK, color: tok("--k"), w: 1.8 }, { x: r.t, y: dL, color: tok("--leak"), w: 1.4 }] });
+    $("wTOut").textContent = r.t[i].toFixed(2) + " ms";
+    document.querySelectorAll("#wPhases button").forEach(b => b.setAttribute("aria-current", b.dataset.key === ph.key));
+    const [head, body] = wPhaseText(ph, i);
+    $("wWhen").textContent = ph.name + " · t = " + r.t[i].toFixed(2) + " ms · " + (conv === "1952" ? "−V" : "Vm") + " = " + sNum(D(r.V[i])) + " mV";
+    $("wHead").innerHTML = head; $("wText").innerHTML = body;
+    const a = r.INa[i], b = r.IK[i], c = r.IL[i], f2 = x => (x >= 0 ? "+" : "−") + Math.abs(x).toFixed(1).padStart(6);
+    $("wEq").innerHTML =
+      `<span class="lhs">C<sub>M</sub> dV/dt = −(I<sub>Na</sub> + I<sub>K</sub> + I<sub>l</sub>)   [1952 signs, µA/cm²]</span>` +
+      `<span><span class="na">I<sub>Na</sub> = ${(P.gNa * r.m[i] ** 3 * r.h[i]).toFixed(2)} × (${sNum(r.V[i])} + 115) = ${f2(a)}</span></span>` +
+      `<span><span class="k">I<sub>K</sub>  = ${(P.gK * r.n[i] ** 4).toFixed(2)} × (${sNum(r.V[i])} − 12) = ${f2(b)}</span></span>` +
+      `<span><span class="l">I<sub>l</sub>  = 0.30 × (${sNum(r.V[i])} + 10.613) = ${f2(c)}</span></span>` +
+      `<span>dV/dt = ${f2(r.dV[i])} mV/ms  →  ${Math.abs(r.dV[i]) < 0.5 ? "near balance" : (r.dV[i] < 0 ? "depolarising" : "repolarising")}</span>`;
+    clearTimeout(wTestTimer);
+    wTestTimer = setTimeout(() => { $("wTest").innerHTML = wRefractoryTest(i); }, wPlaying ? 120 : 0);
+  }
+  wT.addEventListener("input", () => { wPlaying = false; wPlay.textContent = "Play"; drawWhole(); });
+  wPlay.addEventListener("click", () => {
+    wPlaying = !wPlaying; wPlay.textContent = wPlaying ? "Pause" : "Play";
+    if (wPlaying) { if (+wT.value >= 1000) wT.value = 0; wFrom = +wT.value; wStart = performance.now(); requestAnimationFrame(wTick); }
+  });
+  function wTick(now) {
+    if (!wPlaying) return;
+    const v = Math.min(1000, wFrom + (now - wStart) / (reduce ? 3000 : 14000) * 1000);
+    wT.value = Math.round(v); drawWhole();
+    if (v >= 1000) { wPlaying = false; wPlay.textContent = "Replay"; return; }
+    requestAnimationFrame(wTick);
+  }
+
+  // ================= convention, theme, resize =================
+  function drawAll() { drawAP(); drawExc(); drawVC(); drawIn(); drawWhole(); if (PR) drawProp(+prScrub.value / 1000 * PR.tEnd); }
+  function setConv(c) { conv = c; $("conv1952").setAttribute("aria-pressed", c === "1952"); $("convModern").setAttribute("aria-pressed", c !== "1952"); drawAll(); }
+  $("conv1952").addEventListener("click", () => setConv("1952"));
+  $("convModern").addEventListener("click", () => setConv("modern"));
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+  new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  let rz = null; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(drawAll, 80); }).observe(document.querySelector(".wrap"));
+
+  $("copyJson").addEventListener("click", () => {
+    const j = JSON.stringify({ source: "Hodgkin & Huxley (1952) J Physiol 117:500-544, doi:10.1113/jphysiol.1952.sp004764", convention: "V = displacement from rest (mV), depolarisation negative; inward current positive", C_M_uF_cm2: 1.0, gNa_mS_cm2: 120, gK_mS_cm2: 36, gL_mS_cm2: 0.3, VNa_mV: -115, VK_mV: 12, VL_mV: -10.613, T_ref_C: 6.3, Q10: 3, propagation: { a_um: 238, R2_ohm_cm: 35.4, T_C: 18.5 } }, null, 2);
+    const msg = $("copyMsg");
+    navigator.clipboard.writeText(j).then(() => { msg.textContent = "Copied"; }, () => { msg.textContent = "Copy blocked here; select the table instead"; });
+  });
+
+  drawAll();
+  runProp();
+})();
+</script>
+
+</body>
+</html>
