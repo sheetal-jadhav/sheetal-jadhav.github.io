@@ -5,7 +5,7 @@
     {{- with .Params.intro }}<p class="projects-intro">{{ . }}</p>{{ end }}
   </header>
 
-  <div class="projects-grid">
+  <div class="projects-grid sims-grid">
     {{- range (where .RegularPages "Params.project" true).ByWeight }}
     <article class="project-card{{ if not .Params.link }} is-soon{{ end }}">
       {{- with .Params.cover.image }}
