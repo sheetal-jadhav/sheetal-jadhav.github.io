@@ -15,24 +15,27 @@ menu:
     - name: Research Projects
       url: papers/
       weight: 2
+    - name: Hippocampus Atlas
+      url: hippocampus-atlas/
+      weight: 3
     - name: Interactive Simulations
       url: simulations/
-      weight: 3
+      weight: 4
     - name: Writing Wall
       url: books/
-      weight: 4
+      weight: 5
     - name: Photography Excursions
       url: photography/
-      weight: 5
+      weight: 6
     - name: Study Resources
       url: notes/
-      weight: 6
+      weight: 7
     - name: Sci Comm.
       url: https://www.instagram.com/onlybrainytales/
-      weight: 7
+      weight: 8
     - name: The Neuroscience Scholars Collective
       url: collective/
-      weight: 8
+      weight: 9
 params:
   description: "This website hosts Sheetal Jadhav's research papers, course materials, projects, curriculum vitae, and contact information."
   author: Sheetal Jadhav
@@ -69,6 +72,8 @@ params:
         url: cv/
       - name: Research Projects
         url: papers/
+      - name: Hippocampus Atlas
+        url: hippocampus-atlas/
       - name: Interactive Simulations
         url: simulations/
       - name: Writing Wall
