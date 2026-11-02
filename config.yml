@@ -15,10 +15,10 @@ menu:
     - name: Research Projects
       url: papers/
       weight: 2
-    - name: Personal Essays
+    - name: Writing Wall
       url: books/
       weight: 3
-    - name: Photography
+    - name: Photography Excursions
       url: photography/
       weight: 4
     - name: Sci Comm.
@@ -27,7 +27,7 @@ menu:
     - name: The Neuroscience Scholars Collective
       url: collective/
       weight: 6
-    - name: Study Notes
+    - name: Study Resources
       url: notes/
       weight: 7
 params:
@@ -66,15 +66,15 @@ params:
         url: cv/
       - name: Research Projects
         url: papers/
-      - name: Personal Essays
+      - name: Writing Wall
         url: books/
-      - name: Photography
+      - name: Photography Excursions
         url: photography/
       - name: Sci Comm.
         url: https://www.instagram.com/onlybrainytales/
       - name: The Neuroscience Scholars Collective
         url: collective/
-      - name: Study Notes
+      - name: Study Resources
         url: notes/
   socialIcons:
     - name: Email
