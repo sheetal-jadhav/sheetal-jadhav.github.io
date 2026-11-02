@@ -57,7 +57,7 @@ params:
   profileMode:
     enabled: true
     title: Sheetal Jadhav
-    subtitle: "I am an aspiring computational neuroscientist pursuing a PhD ... I study how neural circuits learn ...... using biophysical models of the hippocampus and the plasticity rules that shape cognitive maps.\n\nI trained in Electronics and Communication Engineering at NIT Karnataka. I worked with   zebra finches at IISER Pune,.... My work sits at the meeting point of theory and data....\n\nI am also committed to science communication and share neuroscience with a broader audience through Brainy Tales. Outside research, I write and enjoy photography."
+    subtitle: "I am an aspiring computational neuroscientist with an Electronics Engineering background and hands-on experience across scales: from wet-lab developmental neurobiology and in vivo electrophysiology in songbirds to large-scale calcium imaging analysis and spiking network models of hippocampal learning. I build biologically grounded models of how plasticity shapes memory and behaviour, constrained by real neural data.\n\nI am also committed to science communication and share neuroscience with a broader audience through Brainy Tales. Outside research, I write and enjoy photography."
     imageUrl: "picture.jpeg"
     imageWidth: 160
     imageHeight: 160
