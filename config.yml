@@ -24,14 +24,14 @@ menu:
     - name: Photography Excursions
       url: photography/
       weight: 5
-    - name: Sci Comm.
-      url: https://www.instagram.com/onlybrainytales/
-      weight: 6
-    - name: The Neuroscience Scholars Collective
-      url: collective/
-      weight: 7
     - name: Study Resources
       url: notes/
+      weight: 6
+    - name: Sci Comm.
+      url: https://www.instagram.com/onlybrainytales/
+      weight: 7
+    - name: The Neuroscience Scholars Collective
+      url: collective/
       weight: 8
 params:
   description: "This website hosts Sheetal Jadhav's research papers, course materials, projects, curriculum vitae, and contact information."
@@ -75,12 +75,12 @@ params:
         url: books/
       - name: Photography Excursions
         url: photography/
+      - name: Study Resources
+        url: notes/
       - name: Sci Comm.
         url: https://www.instagram.com/onlybrainytales/
       - name: The Neuroscience Scholars Collective
         url: collective/
-      - name: Study Resources
-        url: notes/
   socialIcons:
     - name: Email
       url: mailto:31jsheetal@gmail.com
