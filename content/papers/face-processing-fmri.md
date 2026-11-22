@@ -4,6 +4,12 @@ project: true
 weight: 5
 summary: "Seed-based functional connectivity analysis of the open-source Haxby fMRI dataset, mapping the wider brain network involved in face processing. Homi Bhabha Centre for Science Education, Mumbai."
 tags: ["fMRI", "Functional connectivity", "Face processing", "Cognitive science"]
+credit: "Cover image: De Negri, Simone, Caruana & Gerbella (2026), Brain Structure and Function 231:72, Fig. 5A,B (CC BY 4.0)"
+cover:
+  image: "/images/projects/face-processing-fmri.jpg"
+  alt: "Tractography in a template human brain: white-matter fibres, including the cingulum bundle, linking anterior cingulate and ventromedial prefrontal regions shown as coloured spheres"
+  caption: "Cover image: white-matter connections between cingulate and prefrontal nodes of the frontal face network, from Fig. 5A,B of De Negri B, Simone L, Caruana F, Gerbella M (2026). [Inside the frontal face network: multimodal evidence for distinct emotional and motor resonance circuits](https://doi.org/10.1007/s00429-026-03125-5). *Brain Structure and Function* 231:72. © The Author(s) 2026, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)."
+  hiddenInSingle: false
 hideMeta: true
 ---
 
