@@ -1,7 +1,7 @@
 ---
 title: "Plasticity Rules That Build Cognitive Maps"
 project: true
-weight: 1
+weight: 5
 status: "Current"
 summary: "A biophysically detailed model of hippocampal subcircuits that builds a cognitive map on its own, combining ITDP-driven recruitment of silent neurons with BTSP stabilisation during spatial navigation."
 tags: ["Hippocampus", "ITDP", "BTSP", "Modelling"]

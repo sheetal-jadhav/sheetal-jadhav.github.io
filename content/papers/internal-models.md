@@ -1,7 +1,7 @@
 ---
 title: "Internal models of Songbird"
 project: true
-weight: 3
+weight: 4
 summary: "A review of the neural mechanisms behind birdsong generation and recognition, and how predictive coding theory can be applied to the songbird."
 tags: ["Birdsong", "Predictive coding", "Bayesian brain", "Review"]
 credit: "Cover art: Amirmasoud Ahmadi, The Journal of Neuroscience cover, Vol. 46, No. 43 (28 Oct 2026)"
