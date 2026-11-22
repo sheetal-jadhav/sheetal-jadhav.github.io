@@ -1,7 +1,7 @@
 ---
 title: "Replicating a Biophysical Model of HVC"
 project: true
-weight: 3
+weight: 2
 status: "Current"
 summary: "An independent replication of a biophysical three-class network model of the songbird premotor nucleus HVC (Bou Diab, Chammas & Daou, eLife 2025), rebuilt from the published text alone."
 tags: ["Birdsong", "HVC", "Replication", "Modelling"]

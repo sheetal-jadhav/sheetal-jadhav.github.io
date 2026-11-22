@@ -1,7 +1,7 @@
 ---
 title: "Wnt Signalling in the Developing Cortical Hem"
 project: true
-weight: 2
+weight: 4
 summary: "How Wnt signalling genes shape the cortical hem, the organiser of the hippocampus, in the developing mouse brain, studied with gene overexpression and knockdown, immunohistochemistry and transcriptomic analysis. Tata Institute of Fundamental Research, Mumbai."
 tags: ["Developmental neurobiology", "Wnt signalling", "Hippocampus", "Transcriptomics"]
 credit: "Cover image: Parichha, Suresh et al. (2022), Nature Communications 13:633, Fig. 6e,g (CC BY 4.0)"
