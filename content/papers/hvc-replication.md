@@ -21,7 +21,6 @@ HVC is the premotor nucleus that drives the precise timing of zebra finch song. 
 
 ## Methods
 
-- **Rebuilt from the text alone.** I re-implemented every equation and parameter from the published description and its cited sources. The authors' code stayed unopened until my own figures existed, and each parameter is tagged with where it came from.
 - **Hodgkin–Huxley-type neurons.** Each cell class is a conductance-based model with its own set of ionic currents, connected by AMPA and GABA synapses according to the paper's wiring rules.
 - **Reusable Python library.** The model is written as a small library, with the network wiring given as declarative specifications. Simulations use SciPy's adaptive RK45 solver (the same method as MATLAB's ode45), checked against a fixed-step RK4 integrator.
 - **A second, independent implementation.** The model was also rebuilt in Brian2, and both versions give the same results.
