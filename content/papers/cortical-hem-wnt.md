@@ -4,6 +4,12 @@ project: true
 weight: 4
 summary: "How Wnt signalling genes shape the cortical hem, the organiser of the hippocampus, in the developing mouse brain, studied with gene overexpression and knockdown, immunohistochemistry and transcriptomic analysis. Tata Institute of Fundamental Research, Mumbai."
 tags: ["Developmental neurobiology", "Wnt signalling", "Hippocampus", "Transcriptomics"]
+credit: "Cover image: Parichha, Suresh et al. (2022), Nature Communications 13:633, Fig. 6e,g (CC BY 4.0)"
+cover:
+  image: "/images/projects/cortical-hem-wnt.jpg"
+  alt: "Confocal images of the embryonic mouse choroid plexus: folded epithelium labelled green for TTR, with cell nuclei in blue and a cluster of beta-III tubulin positive cells in white"
+  caption: "Cover image: confocal images of the E13.5 mouse choroid plexus (TTR in green, DAPI in blue, β-III TUBULIN in white), cropped from Fig. 6e,g of Parichha A, Suresh V, Chatterjee M, *et al.* (2022). [Constitutive activation of canonical Wnt signaling disrupts choroid plexus epithelial fate](https://doi.org/10.1038/s41467-021-27602-z). *Nature Communications* 13:633. © The Author(s) 2022, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)."
+  hiddenInSingle: false
 hideMeta: true
 ---
 
