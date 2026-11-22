@@ -3,7 +3,7 @@ title: "Replicating a Biophysical Model of HVC"
 project: true
 weight: 2
 status: "Current"
-summary: "An independent replication, for ReScience C, of a biophysical three-class network model of the songbird premotor nucleus HVC (Bou Diab, Chammas & Daou, eLife 2025), rebuilt from the published text alone."
+summary: "An independent replication of a biophysical three-class network model of the songbird premotor nucleus HVC (Bou Diab, Chammas & Daou, eLife 2025), rebuilt from the published text alone."
 tags: ["Birdsong", "HVC", "Replication", "Modelling"]
 cover:
   image: "/images/projects/hvc-replication-fig5.png"
@@ -17,9 +17,15 @@ hideMeta: true
 
 ## About
 
-HVC is the premotor nucleus that drives the precise timing of zebra finch song. Bou Diab, Chammas & Daou (2025, *eLife* 14:RP105526) proposed a conductance-based network of its three neuron classes (HVC(RA) projection neurons, HVC(X) projection neurons and interneurons) to explain how a stereotyped sequence of activity propagates through it.
+HVC is the premotor nucleus that drives the precise timing of zebra finch song. Bou Diab, Chammas & Daou (2025, *eLife* 14:RP105526) proposed a conductance-based network of its three neuron classes (HVC(RA) projection neurons, HVC(X) projection neurons and interneurons) to explain how a stereotyped sequence of activity propagates through it. This project is an independent replication of that model.
 
-I re-implemented the model from the published description only, without opening the authors' code until my own figures existed, for submission to [ReScience C](https://rescience.github.io/). The model is written as a reusable Python library (SciPy RK45 integration, with fixed-step RK4 as a check), and a second, independent implementation in Brian2 confirms the results.
+## Methods
+
+- **Rebuilt from the text alone.** I re-implemented every equation and parameter from the published description and its cited sources. The authors' code stayed unopened until my own figures existed, and each parameter is tagged with where it came from.
+- **Hodgkin–Huxley-type neurons.** Each cell class is a conductance-based model with its own set of ionic currents, connected by AMPA and GABA synapses according to the paper's wiring rules.
+- **Reusable Python library.** The model is written as a small library, with the network wiring given as declarative specifications. Simulations use SciPy's adaptive RK45 solver (the same method as MATLAB's ode45), checked against a fixed-step RK4 integrator.
+- **A second, independent implementation.** The model was also rebuilt in Brian2, and both versions give the same results.
+- **Many random networks, not one.** Each result is tested across many randomly wired networks (for example 50 networks for sequence propagation), together with robustness and numerical checks.
 
 ## Findings
 
