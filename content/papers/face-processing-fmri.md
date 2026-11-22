@@ -1,7 +1,7 @@
 ---
 title: "Brain Networks for Face Processing"
 project: true
-weight: 4
+weight: 5
 summary: "Seed-based functional connectivity analysis of the open-source Haxby fMRI dataset, mapping the wider brain network involved in face processing. Homi Bhabha Centre for Science Education, Mumbai."
 tags: ["fMRI", "Functional connectivity", "Face processing", "Cognitive science"]
 hideMeta: true
