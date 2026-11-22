@@ -8,7 +8,8 @@ hideMeta: true
 ---
 
 Junior Research Fellow, Tata Institute of Fundamental Research (TIFR), Mumbai · May 2018 – December 2019<br>
-Supervisor: Prof. Shubha Tole
+Supervisor: Prof. Shubha Tole<br>
+Mentors: Arpan Parichha, Varun Suresh, Suranjana Pal, Archana Iyer
 
 ## About
 
