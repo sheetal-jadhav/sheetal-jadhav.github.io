@@ -4,11 +4,11 @@ project: true
 weight: 3
 summary: "A review of the neural mechanisms behind birdsong generation and recognition, and how predictive coding theory can be applied to the songbird."
 tags: ["Birdsong", "Predictive coding", "Bayesian brain", "Review"]
-credit: "Cover image: Long Lab, NYU Langone Health"
+credit: "Cover art: Amirmasoud Ahmadi, The Journal of Neuroscience cover, Vol. 46, No. 43 (28 Oct 2026)"
 cover:
-  image: "/images/projects/internal-models.jpg"
-  alt: "A zebra finch beside a pocket watch, framed by panels labelled Networks, Synapses, Connectivity and Biophysics"
-  caption: "Cover image: [Long Lab, NYU Langone Health](https://longlab.med.nyu.edu/research/)."
+  image: "/images/projects/bird-brain.jpg"
+  alt: "Two zebra finches on a branch facing a fan of song spectrograms and neural spike recordings"
+  caption: "Cover art by Amirmasoud Ahmadi, [*The Journal of Neuroscience*, Vol. 46, No. 43](https://www.jneurosci.org/content/46/43) (28 October 2026). © Society for Neuroscience."
   hiddenInSingle: false
 hideMeta: true
 ---

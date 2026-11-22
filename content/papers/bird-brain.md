@@ -4,11 +4,11 @@ project: true
 weight: 4
 summary: "How a zebra finch's brain prepares, produces and corrects its song, from in vivo recordings of song circuits to computational models of the same circuits."
 tags: ["Birdsong", "Electrophysiology", "Modelling"]
-credit: "Cover art: Amirmasoud Ahmadi, The Journal of Neuroscience cover, Vol. 46, No. 43 (28 Oct 2026)"
+credit: "Cover image: Long Lab, NYU Langone Health"
 cover:
-  image: "/images/projects/bird-brain.jpg"
-  alt: "Two zebra finches on a branch facing a fan of song spectrograms and neural spike recordings"
-  caption: "Cover art by Amirmasoud Ahmadi, [*The Journal of Neuroscience*, Vol. 46, No. 43](https://www.jneurosci.org/content/46/43) (28 October 2026). © Society for Neuroscience."
+  image: "/images/projects/internal-models.jpg"
+  alt: "A zebra finch beside a pocket watch, framed by panels labelled Networks, Synapses, Connectivity and Biophysics"
+  caption: "Cover image: [Long Lab, NYU Langone Health](https://longlab.med.nyu.edu/research/)."
   hiddenInSingle: false
 hideMeta: true
 ---
