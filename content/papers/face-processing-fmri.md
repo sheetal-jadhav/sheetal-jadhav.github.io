@@ -1,5 +1,5 @@
 ---
-title: "Brain Networks for Face Processing"
+title: "Role of Limbic System in Face Recognition Circuits"
 project: true
 weight: 5
 summary: "Seed-based functional connectivity analysis of the open-source Haxby fMRI dataset, mapping the wider brain network involved in face processing. Homi Bhabha Centre for Science Education, Mumbai."
