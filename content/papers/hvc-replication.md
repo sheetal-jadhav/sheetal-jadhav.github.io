@@ -6,9 +6,9 @@ status: "Current"
 summary: "An independent replication, for ReScience C, of a biophysical three-class network model of the songbird premotor nucleus HVC (Bou Diab, Chammas & Daou, eLife 2025), rebuilt from the published text alone."
 tags: ["Birdsong", "HVC", "Replication", "Modelling"]
 cover:
-  image: "/images/projects/hvc-replication.png"
-  alt: "Spike raster of 120 HVC(RA) neurons firing in order, one after another, across about 250 ms"
-  caption: "Sequence propagation in the replicated model: all 120 HVC(RA) neurons burst in chain order."
+  image: "/images/projects/hvc-replication-fig5.png"
+  alt: "Voltage traces of a presynaptic HVC(RA) neuron bursting and a postsynaptic HVC(RA) neuron responding a few milliseconds later, for two values of AMPA conductance (A) and A-type potassium conductance (B)"
+  caption: "Replicated Fig 5: the synaptic delay between consecutive HVC(RA) neurons, and how it changes with AMPA conductance (A) and A-type potassium conductance (B)."
   hiddenInSingle: false
 hideMeta: true
 ---
