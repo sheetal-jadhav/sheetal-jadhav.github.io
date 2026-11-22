@@ -1,5 +1,5 @@
 ---
-title: "Building the Bird Brain"
+title: "Building the Bird Brain: From Computational Models to Neural Circuits"
 project: true
 weight: 4
 summary: "How a zebra finch's brain prepares, produces and corrects its song, from in vivo recordings of song circuits to computational models of the same circuits."
